@@ -69,12 +69,28 @@ See **spec/11-state-storage-implementation-order.md** for detailed implementatio
     - Add keyboard handling
     - Integrate with main application
 
-## Phase 7: Future Enhancements
-12. **Additional UI Integration** (spec/08-future-ui-integration.md)
+## Phase 7: Web User Interface
+12. **Web Interface Architecture** (spec/15-web-interface-architecture.md)
+    - Design REST API endpoints
+    - Define JSON state structure
+    - Plan HTML/CSS/JavaScript interface
+    - Choose technology stack (vanilla JS, standard library HTTP)
+    - Design concurrency handling
+
+13. **Web Interface Implementation** (spec/16-web-interface-implementation-plan.md)
+    - Create web package with HTTP server
+    - Implement GET/POST API endpoints
+    - Build HTML interface with controls
+    - Add CSS styling
+    - Implement JavaScript logic with polling
+    - Integrate with main application
+
+## Phase 8: Future Enhancements
+14. **Additional UI Integration** (spec/08-future-ui-integration.md)
     - Stream Deck integration
-    - Web interface
-    - Create API layer
     - Add presets and scenes
+    - WebSocket support for real-time updates
+    - Animations and effects
 
 ## Development Tips
 
@@ -104,8 +120,8 @@ Before moving to the next phase, ensure:
 
 ## Estimated Complexity
 - **Low Complexity:** Project setup, MQTT infrastructure, LED strip, video light, storage schema
-- **Medium Complexity:** Main orchestration, testing, state storage operations, driver integration, TUI components (LED strip, video light)
-- **High Complexity:** LED bar (due to complex message format), LED bar state storage, TUI LED bar component, future web/Stream Deck integration
+- **Medium Complexity:** Main orchestration, testing, state storage operations, driver integration, TUI components (LED strip, video light), web backend (API, server)
+- **High Complexity:** LED bar (due to complex message format), LED bar state storage, TUI LED bar component, web frontend (JavaScript, state management), future Stream Deck integration
 
 ## Dependencies
 - Each driver depends on MQTT infrastructure
@@ -115,4 +131,7 @@ Before moving to the next phase, ensure:
 - Driver state integration depends on storage layer
 - TUI depends on drivers having getter methods for current state
 - TUI depends on main orchestration and state storage being complete
+- Web interface depends on drivers having getter methods for current state
+- Web interface depends on main orchestration and state storage being complete
+- Web and TUI can be developed independently (parallel development possible)
 - Future UI integration depends on main orchestration and state storage being complete

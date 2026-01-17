@@ -48,3 +48,11 @@ The state should be loaded on startup by querying the sqlite file, and saved bac
 
 One of the user-interfaces is a text user-interface.  The screen is split into 4 sections, one for each of the lights.  In each section there are controls for RGB, RGBW, W, or brightness as appropriate to that type of light.  The "TAB" key switches focus between the sections, while arrow keys move between the input controls.  Up and Down arrow keys change the values by small amounts, while holding shift with up and down changes the values in large amounts.
 
+## Web
+
+One of the user-interfaces is a web interface, which runs in a spawned go func().  The web interfaces is composed of 2 separate parts:
+
+1. An API at /api, which responds to GET requests by returning the complete status as a JSON structure, and responds to POST requests where the payload is a JSON doc that contains the complete status to change to.
+
+2. An HTML page which makes an AJAX request to get the status from the API and renders some HTML UI components, and whenever the user changes something it sends the status back to the POST API endpoint.
+

@@ -113,11 +113,11 @@ Complete database schema documentation.
 
 ---
 
-### Text User Interface (To Do 📋)
+### Text User Interface (Completed ✅)
 
 #### 13. [TUI Architecture](13-tui-architecture.md)
 Terminal-based user interface design.
-- **Status:** 📋 Not started
+- **Status:** ✅ Complete
 - **Complexity:** Medium
 
 **What it covers:**
@@ -129,9 +129,8 @@ Terminal-based user interface design.
 
 #### 14. [TUI Implementation Plan](14-tui-implementation-plan.md)
 Step-by-step guide for implementing the TUI.
-- **Status:** 📋 Not started
+- **Status:** ✅ Complete
 - **Complexity:** Medium
-- **Estimated time:** 8-12 hours
 
 **What it covers:**
 - 8 implementation phases
@@ -143,18 +142,52 @@ Step-by-step guide for implementing the TUI.
 
 ---
 
+### Web User Interface (To Do 📋)
+
+#### 15. [Web Interface Architecture](15-web-interface-architecture.md)
+Browser-based user interface design.
+- **Status:** 📋 Not started
+- **Complexity:** Medium-High
+
+**What it covers:**
+- REST API design (GET/POST endpoints)
+- JSON state structure
+- HTML/CSS/JavaScript interface
+- Technology selection (vanilla JS, standard library)
+- Concurrency handling with mutex
+- Polling strategy for state updates
+- Security considerations
+
+#### 16. [Web Interface Implementation Plan](16-web-interface-implementation-plan.md)
+Step-by-step guide for implementing the web interface.
+- **Status:** 📋 Not started
+- **Complexity:** Medium-High
+- **Estimated time:** 12-16 hours
+
+**What it covers:**
+- 7 implementation phases
+- HTTP server setup with embedded static files
+- API endpoint implementation
+- HTML structure with controls for all lights
+- CSS styling (responsive, dark theme)
+- JavaScript logic with debouncing and polling
+- Integration with main application
+- Testing strategy
+
+---
+
 ### Future Enhancements (🔮)
 
 #### 08. [UI Integration](08-future-ui-integration.md)
-Additional user interface options beyond TUI.
+Additional user interface options.
 - **Status:** 🔮 Future work
 - **Complexity:** High
 
 **What it covers:**
 - Stream Deck integration
-- Web interface
-- API layer design
 - Scene presets
+- WebSocket support (real-time updates)
+- Animations and effects
 
 ---
 
@@ -177,11 +210,15 @@ Additional user interface options beyond TUI.
 - [x] Storage infrastructure (spec 09)
 - [x] Driver integration (spec 10)
 
-### Phase 5: Text User Interface 📋
-- [ ] TUI architecture (spec 13)
-- [ ] TUI implementation (spec 14)
+### Phase 5: Text User Interface ✅
+- [x] TUI architecture (spec 13)
+- [x] TUI implementation (spec 14)
 
-### Phase 6: Future 🔮
+### Phase 6: Web User Interface 📋
+- [ ] Web interface architecture (spec 15)
+- [ ] Web interface implementation (spec 16)
+
+### Phase 7: Future 🔮
 - [ ] Additional UI integration (spec 08)
 
 ---
@@ -213,6 +250,35 @@ If you're ready to implement the text user interface, follow this sequence:
 
 ---
 
+## Getting Started with Web Interface
+
+If you're ready to implement the web user interface, follow this sequence:
+
+1. **Read the architecture:** Start with [15-web-interface-architecture.md](15-web-interface-architecture.md)
+2. **Follow the implementation plan:** Use [16-web-interface-implementation-plan.md](16-web-interface-implementation-plan.md)
+3. **Test incrementally:** Build and test each phase as you go
+
+### Quick Implementation Checklist
+
+- [ ] Create `web/` package structure with `static/` subdirectory
+- [ ] Define state structures (State, LEDStripState, LEDBarState, etc.)
+- [ ] Implement BuildState() and ApplyState() functions
+- [ ] Create HTTP server with embedded static files
+- [ ] Implement GET /api endpoint (returns JSON state)
+- [ ] Implement POST /api endpoint (accepts and applies JSON state)
+- [ ] Add mutex for concurrency protection
+- [ ] Create HTML interface with controls
+- [ ] Add CSS styling (responsive, dark theme)
+- [ ] Implement JavaScript with fetch API
+- [ ] Add debouncing for user input (300ms)
+- [ ] Add polling for state updates (every 3 seconds)
+- [ ] Integrate with main.go (web mode)
+- [ ] Test all controls in browser
+- [ ] Test on mobile devices
+- [ ] Verify MQTT publishing and database saves
+
+---
+
 ## Project Structure
 
 ```
@@ -231,7 +297,7 @@ office_lights/
 │   ├── schema.go
 │   ├── interface.go
 │   └── mock.go
-├── tui/                     # Text user interface (to be created)
+├── tui/                     # Text user interface
 │   ├── tui.go
 │   ├── model.go
 │   ├── update.go
@@ -242,6 +308,15 @@ office_lights/
 │   ├── videolight.go
 │   ├── styles.go
 │   └── messages.go
+├── web/                     # Web user interface (to be created)
+│   ├── web.go
+│   ├── api.go
+│   ├── state.go
+│   ├── static/
+│   │   ├── index.html
+│   │   ├── style.css
+│   │   └── app.js
+│   └── web_test.go
 ├── spec/                    # This directory
 │   └── *.md
 └── lights.sqlite3          # State database (created at runtime)
@@ -335,4 +410,5 @@ When adding new features:
 - **v1.0** - Initial specifications (specs 01-07)
 - **v1.1** - Added state storage specifications (specs 09-12)
 - **v1.2** - Added TUI specifications (specs 13-14)
+- **v1.3** - Added web interface specifications (specs 15-16)
 - **v2.0** - Will include additional UI integration (spec 08)
