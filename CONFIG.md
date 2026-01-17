@@ -126,6 +126,28 @@ export WEB_PORT=3000
 - Automatic state synchronization (polls every 3 seconds)
 - Debounced updates (300ms delay) to prevent excessive MQTT messages
 
+### Running Multiple UIs Simultaneously
+
+You can run both TUI and web interfaces at the same time:
+
+```bash
+# Run both TUI and web interface
+./office_lights tui web
+
+# Or using environment variables
+export TUI=1
+export WEB=1
+export WEB_PORT=8080
+./office_lights
+```
+
+**Notes:**
+- Both UIs run in separate goroutines and can be used simultaneously
+- When TUI is active, log output is suppressed (affects both UIs)
+- Changes made in one UI are immediately reflected in the other
+- Both UIs share the same driver instances and state
+- Press `Ctrl+C` to shut down all UIs gracefully
+
 ## Building
 
 ```bash

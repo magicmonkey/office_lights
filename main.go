@@ -190,15 +190,18 @@ func main() {
 
 	log.Println("Office Lights Control System Ready")
 
+	// Start TUI in a goroutine if requested
 	if useTUI {
-		log.Println("Starting TUI mode...")
-		if err := tui.Run(ledStrip, ledBar, videoLight1, videoLight2); err != nil {
-			log.Fatalf("TUI error: %v", err)
-		}
-		log.Println("TUI exited")
-		return
+		go func() {
+			log.Println("Starting TUI mode...")
+			if err := tui.Run(ledStrip, ledBar, videoLight1, videoLight2); err != nil {
+				log.Fatalf("TUI error: %v", err)
+			}
+			log.Println("TUI exited")
+		}()
 	}
 
+	// Start web server in a goroutine if requested
 	if useWeb {
 		// Get web server port from environment variable or use default
 		port := os.Getenv("WEB_PORT")
@@ -218,6 +221,11 @@ func main() {
 		}()
 
 		log.Printf("Web interface available at http://localhost:%s", port)
+	}
+
+	// If no UI is requested, just note that we're running in headless mode
+	if !useTUI && !useWeb {
+		log.Println("Running in headless mode (no UI). Press Ctrl+C to exit.")
 	}
 
 	// Set up graceful shutdown

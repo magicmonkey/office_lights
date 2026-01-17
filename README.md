@@ -44,6 +44,8 @@ The state should be loaded on startup by querying the sqlite file, and saved bac
 
 # User interfaces
 
+Multiple UIs are able to be run simultaneously.
+
 ## TUI
 
 One of the user-interfaces is a text user-interface.  The screen is split into 4 sections, one for each of the lights.  In each section there are controls for RGB, RGBW, W, or brightness as appropriate to that type of light.  The "TAB" key switches focus between the sections, while arrow keys move between the input controls.  Up and Down arrow keys change the values by small amounts, while holding shift with up and down changes the values in large amounts.
