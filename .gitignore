@@ -24,4 +24,6 @@ go.work
 
 # sqlite3 file
 lights.sqlite3
+lights.sqlite3-shm
+lights.sqlite3-wal
 
