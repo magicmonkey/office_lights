@@ -13,14 +13,6 @@ import (
 	"github.com/kevin/office_lights/storage"
 )
 
-// Lights holds all light driver instances
-type Lights struct {
-	LEDStrip    *ledstrip.LEDStrip
-	LEDBar      *ledbar.LEDBar
-	VideoLight1 *videolight.VideoLight
-	VideoLight2 *videolight.VideoLight
-}
-
 func main() {
 	log.Println("Office Lights Control System Starting...")
 
@@ -154,14 +146,6 @@ func main() {
 	}
 	log.Println("Video Light 2 driver initialized")
 
-	// Store all lights for easy access
-	lights := &Lights{
-		LEDStrip:    ledStrip,
-		LEDBar:      ledBar,
-		VideoLight1: videoLight1,
-		VideoLight2: videoLight2,
-	}
-
 	// Publish initial state to MQTT (sync physical lights with stored state)
 	log.Println("Publishing initial state to MQTT...")
 	if err := ledStrip.Publish(); err != nil {
@@ -178,9 +162,6 @@ func main() {
 	}
 	log.Println("Initial state published")
 
-	// Demonstrate basic functionality (optional - can be removed)
-	demonstrateLights(lights)
-
 	log.Println("Office Lights Control System Ready")
 
 	// Set up graceful shutdown
@@ -191,55 +172,6 @@ func main() {
 	sig := <-sigChan
 	log.Printf("Received signal %v, shutting down gracefully...", sig)
 
-	// Turn off all lights before shutdown
-	log.Println("Turning off all lights...")
-	if err := lights.LEDStrip.TurnOff(); err != nil {
-		log.Printf("Error turning off LED strip: %v", err)
-	}
-	if err := lights.LEDBar.TurnOffAll(); err != nil {
-		log.Printf("Error turning off LED bar: %v", err)
-	}
-	if err := lights.VideoLight1.TurnOff(); err != nil {
-		log.Printf("Error turning off video light 1: %v", err)
-	}
-	if err := lights.VideoLight2.TurnOff(); err != nil {
-		log.Printf("Error turning off video light 2: %v", err)
-	}
-
 	// Cleanup will happen via defer statements
 	log.Println("Shutdown complete")
-}
-
-// demonstrateLights shows basic functionality of all light types
-// This is optional and can be removed or disabled via environment variable
-func demonstrateLights(lights *Lights) {
-	// Skip demo if environment variable is set
-	if os.Getenv("SKIP_DEMO") != "" {
-		return
-	}
-
-	log.Println("Running light demonstration...")
-
-	// Demo LED Strip - set to a warm white
-	log.Println("Demo: Setting LED strip to warm white")
-	if err := lights.LEDStrip.SetColor(255, 200, 150); err != nil {
-		log.Printf("Error setting LED strip color: %v", err)
-	}
-
-	// Demo LED Bar - set first RGBW LED in section 1 to blue
-	log.Println("Demo: Setting LED bar first RGBW to blue")
-	if err := lights.LEDBar.SetRGBW(1, 0, 0, 0, 255, 100); err != nil {
-		log.Printf("Error setting LED bar RGBW: %v", err)
-	}
-
-	// Demo Video Lights - turn on at 75% brightness
-	log.Println("Demo: Turning on video lights at 75% brightness")
-	if err := lights.VideoLight1.TurnOn(75); err != nil {
-		log.Printf("Error turning on video light 1: %v", err)
-	}
-	if err := lights.VideoLight2.TurnOn(75); err != nil {
-		log.Printf("Error turning on video light 2: %v", err)
-	}
-
-	log.Println("Light demonstration complete")
 }

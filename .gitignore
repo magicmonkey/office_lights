@@ -21,3 +21,7 @@ go.work
 *.swp
 *.swo
 *~
+
+# sqlite3 file
+lights.sqlite3
+

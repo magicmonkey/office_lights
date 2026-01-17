@@ -28,12 +28,6 @@ The office lights control system can be configured using the following environme
   - Will be created automatically on first run
   - Example: `./data/lights.db`
 
-### Application Behavior
-
-- `SKIP_DEMO` - Skip the light demonstration on startup (optional)
-  - When not set, the application will demonstrate each light type on startup
-  - Set to any value to skip the demo
-
 ## Example Usage
 
 ### Basic (Local MQTT Broker)
@@ -64,14 +58,6 @@ export MQTT_PASSWORD="secret"
 export DB_PATH="./lights.sqlite3"
 ./office_lights
 ```
-
-### Skip Demonstration Mode
-```bash
-export SKIP_DEMO=1
-./office_lights
-```
-
-By default, the application runs a brief demonstration of each light type on startup. This helps verify connectivity and shows you what each light does. To skip this demonstration, set the `SKIP_DEMO` environment variable.
 
 ## Building
 

@@ -58,9 +58,6 @@ This document summarizes the implementation of the Office Lights Control System.
   - Environment variable configuration support
   - All driver instances created and managed
   - Graceful shutdown with signal handling
-  - Turn off all lights on shutdown
-  - Optional light demonstration mode
-  - Structured light management via `Lights` struct
 
 ### ✅ Phase 7: Testing (spec/07-testing-strategy.md)
 - Mock MQTT client for testing
@@ -196,7 +193,6 @@ Set via environment variables:
 - `MQTT_USERNAME` - Optional username
 - `MQTT_PASSWORD` - Optional password
 - `DB_PATH` - Database file path (default: `lights.sqlite3`)
-- `SKIP_DEMO` - Skip light demonstration on startup
 
 ## Running the Application
 
@@ -213,12 +209,6 @@ go build
 ### Run with custom broker
 ```bash
 export MQTT_BROKER="tcp://192.168.1.100:1883"
-./office_lights
-```
-
-### Skip demonstration mode
-```bash
-export SKIP_DEMO=1
 ./office_lights
 ```
 
@@ -267,9 +257,6 @@ go test -v -cover ./drivers/...
 ### Main Application
 - ✅ All drivers instantiated
 - ✅ Graceful shutdown
-- ✅ Lights turned off on exit
-- ✅ Optional demonstration mode
-- ✅ Structured light management
 
 ## State Persistence
 
