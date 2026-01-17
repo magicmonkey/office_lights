@@ -1,0 +1,31 @@
+
+# Introduction
+
+This is a go project.
+
+It controls 3 different types of light units, by sending various MQTT messages:
+
+1. LED strip.  This is a length of RGB LEDs, where the colour is set by sending a JSON message to the topic "kevinoffice/ledstrip/sequence" with the following payload:
+  {"sequence":"fill", "data":{"r":<int>,"g":<int>,"b":<int>}}
+where "r", "g", and "b" contain integer values for red, green, and blue respectively.
+
+2. LED bar.  This is a bar of RGBW LEDs, with some additional white-only LEDs.  There are 2 of these bars, and each one reads from a comma-separated list of values sent to the MQTT topic "kevinoffice/ledbar/0".  The values in the list are:
+   * 6 sets of 4 values, for 6 RGBW LEDs
+   * 13 sets of 1 value, for 13 white LEDs
+   * 3 ignored values
+   * 6 sets of 4 values, for 6 RGBW LEDs
+   * 13 sets of 1 value, for 13 white LEDs
+
+3. Video lights.  There are 2 of these, one at the topic "kevinoffice/videolight/1/command/light:0" and the other at the topic "kevinoffice/videolight/2/command/light:0".  They read a message in this format:
+set,<on>,<brightness>
+for example this message will turn the light on to half brightness:
+set,true,50
+
+# Structure
+
+There is a folder "drivers", containing a folder for each of the types of light.  These drivers keep information about the current state of the relevant lights, and format the correct messages for publishing.  They get instantiated for each instance of that type of light.
+
+There will be a user-interface in the future, containing buttons and dials to alter the state of any instantiated light, which will trigger sending the MQTT messages to change the lights.
+
+The `main.go` file in the root contains the orchestration code.
+
