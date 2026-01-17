@@ -100,6 +100,22 @@ This document summarizes the implementation of the Office Lights Control System.
 - Database closed cleanly on shutdown
 - Environment variable support: `DB_PATH`
 
+### ✅ Phase 11: Text User Interface (TUI)
+- `tui/` package - Terminal-based interactive UI
+  - Bubbletea framework for reactive UI
+  - 4-section layout (LED Strip, LED Bar, Video Light 1, Video Light 2)
+  - Full keyboard navigation
+  - Real-time MQTT publishing and database saves
+- Component models for each light type
+- Keyboard controls:
+  - TAB/Shift+TAB for section navigation
+  - Arrow keys for control selection and value adjustment
+  - Shift+arrows for large value changes (±10)
+  - Enter to toggle on/off states
+  - ESC to exit
+- Entry point: `./office_lights tui` or `TUI=1 ./office_lights`
+- Uses existing driver methods - no separate MQTT handling
+
 ## Project Structure
 
 ```
@@ -119,6 +135,24 @@ office_lights/
 │   └── videolight/
 │       ├── videolight.go           # Video light driver
 │       └── videolight_test.go      # Video light tests
+├── storage/
+│   ├── database.go                 # SQLite database operations
+│   ├── schema.go                   # Database schema
+│   ├── interface.go                # StateStore interface
+│   ├── mock.go                     # Mock storage for testing
+│   ├── database_test.go            # Storage tests
+│   └── hasdata_test.go             # HasData tests
+├── tui/
+│   ├── tui.go                      # TUI entry point
+│   ├── model.go                    # Root Bubbletea model
+│   ├── update.go                   # Update function
+│   ├── view.go                     # View rendering
+│   ├── keys.go                     # Key bindings
+│   ├── styles.go                   # Lipgloss styles
+│   ├── messages.go                 # Message types
+│   ├── ledstrip.go                 # LED strip component
+│   ├── ledbar.go                   # LED bar component
+│   └── videolight.go               # Video light component
 ├── spec/                            # Implementation specs
 ├── go.mod                           # Go module
 ├── go.sum                           # Dependencies
@@ -193,6 +227,7 @@ Set via environment variables:
 - `MQTT_USERNAME` - Optional username
 - `MQTT_PASSWORD` - Optional password
 - `DB_PATH` - Database file path (default: `lights.sqlite3`)
+- `TUI` - Enable text user interface mode (optional)
 
 ## Running the Application
 
@@ -211,6 +246,23 @@ go build
 export MQTT_BROKER="tcp://192.168.1.100:1883"
 ./office_lights
 ```
+
+### Run with TUI (Text User Interface)
+```bash
+# Using command line argument
+./office_lights tui
+
+# Or using environment variable
+TUI=1 ./office_lights
+```
+
+**TUI Controls:**
+- TAB/Shift+TAB: Switch between light sections
+- ←→: Navigate between controls
+- ↑↓: Adjust values (+1/-1)
+- Shift+↑↓: Adjust values (+10/-10)
+- Enter: Toggle on/off (video lights)
+- ESC/Ctrl+C: Exit
 
 ### Run tests
 ```bash

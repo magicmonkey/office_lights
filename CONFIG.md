@@ -28,6 +28,12 @@ The office lights control system can be configured using the following environme
   - Will be created automatically on first run
   - Example: `./data/lights.db`
 
+### User Interface
+
+- `TUI` - Enable text user interface mode (optional)
+  - When set to any value, starts the terminal UI
+  - Alternative: run with `./office_lights tui` argument
+
 ## Example Usage
 
 ### Basic (Local MQTT Broker)
@@ -58,6 +64,28 @@ export MQTT_PASSWORD="secret"
 export DB_PATH="./lights.sqlite3"
 ./office_lights
 ```
+
+### TUI Mode (Text User Interface)
+
+Run with interactive terminal UI:
+
+```bash
+# Using command line argument
+./office_lights tui
+
+# Or using environment variable
+export TUI=1
+./office_lights
+```
+
+**TUI Controls:**
+- `TAB` - Switch between light sections
+- `Shift+TAB` - Switch to previous section
+- `←` `→` - Navigate between controls in a section
+- `↑` `↓` - Increase/decrease value by 1
+- `Shift+↑` `Shift+↓` - Increase/decrease value by 10
+- `Enter` - Toggle on/off (video lights only)
+- `ESC` or `Ctrl+C` - Exit TUI
 
 ## Building
 

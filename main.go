@@ -11,6 +11,7 @@ import (
 	"github.com/kevin/office_lights/drivers/videolight"
 	officemqtt "github.com/kevin/office_lights/mqtt"
 	"github.com/kevin/office_lights/storage"
+	"github.com/kevin/office_lights/tui"
 )
 
 func main() {
@@ -163,6 +164,24 @@ func main() {
 	log.Println("Initial state published")
 
 	log.Println("Office Lights Control System Ready")
+
+	// Check if TUI mode is requested
+	useTUI := false
+	if len(os.Args) > 1 && os.Args[1] == "tui" {
+		useTUI = true
+	}
+	if os.Getenv("TUI") != "" {
+		useTUI = true
+	}
+
+	if useTUI {
+		log.Println("Starting TUI mode...")
+		if err := tui.Run(ledStrip, ledBar, videoLight1, videoLight2); err != nil {
+			log.Fatalf("TUI error: %v", err)
+		}
+		log.Println("TUI exited")
+		return
+	}
 
 	// Set up graceful shutdown
 	sigChan := make(chan os.Signal, 1)
