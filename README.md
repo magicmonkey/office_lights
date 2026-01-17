@@ -42,3 +42,9 @@ videolights : id, on, brightness
 
 The state should be loaded on startup by querying the sqlite file, and saved back to the file every time a value changes and is published to MQTT.  Since there is only 1 LED bar and 1 LED strip, they are hard-coded as ID 0, and the 2 videolights are hard-coded as IDs 0 and 1.
 
+# User interfaces
+
+## TUI
+
+One of the user-interfaces is a text user-interface.  The screen is split into 4 sections, one for each of the lights.  In each section there are controls for RGB, RGBW, W, or brightness as appropriate to that type of light.  The "TAB" key switches focus between the sections, while arrow keys move between the input controls.  Up and Down arrow keys change the values by small amounts, while holding shift with up and down changes the values in large amounts.
+

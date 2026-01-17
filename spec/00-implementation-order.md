@@ -55,9 +55,24 @@ Implement each driver independently. They can be developed in parallel or in any
 
 See **spec/11-state-storage-implementation-order.md** for detailed implementation steps.
 
-## Phase 6: Future Enhancements
-10. **UI Integration** (spec/08-future-ui-integration.md)
-    - Plan and implement user interface
+## Phase 6: Text User Interface
+10. **TUI Architecture** (spec/13-tui-architecture.md)
+    - Design terminal-based user interface
+    - Choose TUI framework (Bubbletea)
+    - Define component structure
+    - Plan keyboard navigation
+
+11. **TUI Implementation** (spec/14-tui-implementation-plan.md)
+    - Install dependencies (Bubbletea, Bubbles, Lipgloss)
+    - Implement component models (LED strip, LED bar, video lights)
+    - Create view and update functions
+    - Add keyboard handling
+    - Integrate with main application
+
+## Phase 7: Future Enhancements
+12. **Additional UI Integration** (spec/08-future-ui-integration.md)
+    - Stream Deck integration
+    - Web interface
     - Create API layer
     - Add presets and scenes
 
@@ -89,8 +104,8 @@ Before moving to the next phase, ensure:
 
 ## Estimated Complexity
 - **Low Complexity:** Project setup, MQTT infrastructure, LED strip, video light, storage schema
-- **Medium Complexity:** Main orchestration, testing, state storage operations, driver integration
-- **High Complexity:** LED bar (due to complex message format), LED bar state storage, UI integration
+- **Medium Complexity:** Main orchestration, testing, state storage operations, driver integration, TUI components (LED strip, video light)
+- **High Complexity:** LED bar (due to complex message format), LED bar state storage, TUI LED bar component, future web/Stream Deck integration
 
 ## Dependencies
 - Each driver depends on MQTT infrastructure
@@ -98,4 +113,6 @@ Before moving to the next phase, ensure:
 - Testing can be done incrementally as each driver is completed
 - State storage depends on drivers being implemented
 - Driver state integration depends on storage layer
-- UI integration depends on main orchestration and state storage being complete
+- TUI depends on drivers having getter methods for current state
+- TUI depends on main orchestration and state storage being complete
+- Future UI integration depends on main orchestration and state storage being complete

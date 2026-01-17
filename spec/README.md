@@ -4,17 +4,18 @@ This directory contains detailed specification documents for implementing the of
 
 ## Quick Start
 
-**Already implemented (Steps 1-7):**
+**Already implemented (Steps 1-10):**
 - ✅ Project setup and MQTT infrastructure
 - ✅ All three light drivers (LED strip, LED bar, video lights)
 - ✅ Main orchestration and testing
+- ✅ State storage with SQLite
+- ✅ Driver state integration
 
-**Next to implement (Steps 8-9):**
-- 📋 State storage with SQLite
-- 📋 Driver state integration
+**Next to implement (Steps 11-12):**
+- 📋 Text user interface (TUI)
 
 **Future:**
-- 🔮 UI integration
+- 🔮 Additional UI integration (Stream Deck, web interface)
 
 ## Specification Files
 
@@ -63,13 +64,13 @@ Unit tests, integration tests, and mocking.
 
 ---
 
-### State Persistence (To Do 📋)
+### State Persistence (Completed ✅)
 
 #### 09. [State Storage](09-state-storage.md)
 SQLite database for persistent light state.
-- **Status:** 📋 Not started
+- **Status:** ✅ Complete
 - **Complexity:** Medium
-- **Estimated time:** 4-8 hours
+- **Coverage:** 58.9%
 
 **What it covers:**
 - Database schema design
@@ -79,9 +80,8 @@ SQLite database for persistent light state.
 
 #### 10. [Driver State Integration](10-driver-state-integration.md)
 Integrate state storage into existing drivers.
-- **Status:** 📋 Not started
+- **Status:** ✅ Complete
 - **Complexity:** Medium
-- **Estimated time:** 3-6 hours
 
 **What it covers:**
 - Adding StateStore interface to drivers
@@ -92,7 +92,7 @@ Integrate state storage into existing drivers.
 #### 11. [State Storage Implementation Order](11-state-storage-implementation-order.md)
 Step-by-step guide for implementing state persistence.
 - **Type:** Implementation guide
-- **Complexity:** Detailed walkthrough
+- **Status:** ✅ Followed and completed
 
 **What it covers:**
 - 18 detailed implementation steps
@@ -103,7 +103,7 @@ Step-by-step guide for implementing state persistence.
 #### 12. [Database Schema Reference](12-database-schema-reference.md)
 Complete database schema documentation.
 - **Type:** Reference document
-- **Purpose:** Schema details, queries, troubleshooting
+- **Status:** ✅ Complete
 
 **What it covers:**
 - Table definitions
@@ -113,19 +113,48 @@ Complete database schema documentation.
 
 ---
 
+### Text User Interface (To Do 📋)
+
+#### 13. [TUI Architecture](13-tui-architecture.md)
+Terminal-based user interface design.
+- **Status:** 📋 Not started
+- **Complexity:** Medium
+
+**What it covers:**
+- Bubbletea framework selection
+- Component architecture (4 light sections)
+- Keyboard navigation design
+- State synchronization with drivers
+- Layout and styling approach
+
+#### 14. [TUI Implementation Plan](14-tui-implementation-plan.md)
+Step-by-step guide for implementing the TUI.
+- **Status:** 📋 Not started
+- **Complexity:** Medium
+- **Estimated time:** 8-12 hours
+
+**What it covers:**
+- 8 implementation phases
+- Component models for each light type
+- Update and view functions
+- Key binding implementation
+- Integration with main application
+- Testing strategy
+
+---
+
 ### Future Enhancements (🔮)
 
 #### 08. [UI Integration](08-future-ui-integration.md)
-User interface planning and Stream Deck integration.
+Additional user interface options beyond TUI.
 - **Status:** 🔮 Future work
 - **Complexity:** High
 
 **What it covers:**
-- UI framework options
-- API layer design
-- Control layouts
-- Scene presets
 - Stream Deck integration
+- Web interface
+- API layer design
+- Scene presets
 
 ---
 
@@ -144,37 +173,43 @@ User interface planning and Stream Deck integration.
 - [x] Main orchestration
 - [x] Testing
 
-### Phase 4: State Persistence 📋
-- [ ] Storage infrastructure (spec 09)
-- [ ] Driver integration (spec 10)
+### Phase 4: State Persistence ✅
+- [x] Storage infrastructure (spec 09)
+- [x] Driver integration (spec 10)
 
-### Phase 5: Future 🔮
-- [ ] UI integration (spec 08)
+### Phase 5: Text User Interface 📋
+- [ ] TUI architecture (spec 13)
+- [ ] TUI implementation (spec 14)
+
+### Phase 6: Future 🔮
+- [ ] Additional UI integration (spec 08)
 
 ---
 
-## Getting Started with State Storage
+## Getting Started with TUI
 
-If you're ready to implement state persistence, follow this sequence:
+If you're ready to implement the text user interface, follow this sequence:
 
-1. **Read the overview:** Start with [09-state-storage.md](09-state-storage.md)
-2. **Understand driver changes:** Review [10-driver-state-integration.md](10-driver-state-integration.md)
-3. **Follow the steps:** Use [11-state-storage-implementation-order.md](11-state-storage-implementation-order.md)
-4. **Reference the schema:** Keep [12-database-schema-reference.md](12-database-schema-reference.md) handy
+1. **Read the architecture:** Start with [13-tui-architecture.md](13-tui-architecture.md)
+2. **Follow the implementation plan:** Use [14-tui-implementation-plan.md](14-tui-implementation-plan.md)
+3. **Test incrementally:** Build and test each component as you go
 
 ### Quick Implementation Checklist
 
-- [ ] Install SQLite driver: `go get github.com/mattn/go-sqlite3`
-- [ ] Create `storage/` package
-- [ ] Implement database schema and initialization
-- [ ] Implement save/load operations
-- [ ] Create storage mock for testing
-- [ ] Update LED strip driver with state storage
-- [ ] Update video light driver with state storage
-- [ ] Update LED bar driver with state storage
-- [ ] Update main.go to load/save state
-- [ ] Test state persistence across restarts
-- [ ] Update documentation
+- [ ] Install Bubbletea framework: `go get github.com/charmbracelet/bubbletea@latest`
+- [ ] Install Bubbles components: `go get github.com/charmbracelet/bubbles@latest`
+- [ ] Install Lipgloss styling: `go get github.com/charmbracelet/lipgloss@latest`
+- [ ] Create `tui/` package structure
+- [ ] Add getter methods to drivers (R(), G(), B(), IsOn(), Brightness())
+- [ ] Implement LED strip component
+- [ ] Implement video light components
+- [ ] Implement LED bar component
+- [ ] Create root model and update function
+- [ ] Implement view rendering with layout
+- [ ] Add keyboard navigation
+- [ ] Integrate with main.go (TUI mode)
+- [ ] Test all controls and navigation
+- [ ] Verify MQTT publishing and database saves
 
 ---
 
@@ -191,11 +226,22 @@ office_lights/
 │   ├── ledstrip/
 │   ├── ledbar/
 │   └── videolight/
-├── storage/                 # State persistence (to be created)
+├── storage/                 # State persistence
 │   ├── database.go
 │   ├── schema.go
 │   ├── interface.go
 │   └── mock.go
+├── tui/                     # Text user interface (to be created)
+│   ├── tui.go
+│   ├── model.go
+│   ├── update.go
+│   ├── view.go
+│   ├── keys.go
+│   ├── ledstrip.go
+│   ├── ledbar.go
+│   ├── videolight.go
+│   ├── styles.go
+│   └── messages.go
 ├── spec/                    # This directory
 │   └── *.md
 └── lights.sqlite3          # State database (created at runtime)
@@ -288,4 +334,5 @@ When adding new features:
 
 - **v1.0** - Initial specifications (specs 01-07)
 - **v1.1** - Added state storage specifications (specs 09-12)
-- **v2.0** - Will include UI integration (spec 08)
+- **v1.2** - Added TUI specifications (specs 13-14)
+- **v2.0** - Will include additional UI integration (spec 08)
