@@ -41,11 +41,25 @@ Implement each driver independently. They can be developed in parallel or in any
    - Integration tests
    - Manual testing with actual lights
 
-## Phase 5: Future Enhancements
-8. **UI Integration** (spec/08-future-ui-integration.md)
-   - Plan and implement user interface
-   - Create API layer
-   - Add presets and scenes
+## Phase 5: State Persistence
+8. **State Storage Infrastructure** (spec/09-state-storage.md)
+   - SQLite database setup
+   - Schema creation
+   - Storage layer implementation
+   - Load and save operations
+
+9. **Driver State Integration** (spec/10-driver-state-integration.md)
+   - Update drivers to use storage layer
+   - Add state persistence to all drivers
+   - Maintain backward compatibility
+
+See **spec/11-state-storage-implementation-order.md** for detailed implementation steps.
+
+## Phase 6: Future Enhancements
+10. **UI Integration** (spec/08-future-ui-integration.md)
+    - Plan and implement user interface
+    - Create API layer
+    - Add presets and scenes
 
 ## Development Tips
 
@@ -74,12 +88,14 @@ Before moving to the next phase, ensure:
 - [ ] Code is documented
 
 ## Estimated Complexity
-- **Low Complexity:** Project setup, MQTT infrastructure, LED strip, video light
-- **Medium Complexity:** Main orchestration, testing
-- **High Complexity:** LED bar (due to complex message format), UI integration
+- **Low Complexity:** Project setup, MQTT infrastructure, LED strip, video light, storage schema
+- **Medium Complexity:** Main orchestration, testing, state storage operations, driver integration
+- **High Complexity:** LED bar (due to complex message format), LED bar state storage, UI integration
 
 ## Dependencies
 - Each driver depends on MQTT infrastructure
 - Main orchestration depends on all drivers
 - Testing can be done incrementally as each driver is completed
-- UI integration depends on main orchestration being complete
+- State storage depends on drivers being implemented
+- Driver state integration depends on storage layer
+- UI integration depends on main orchestration and state storage being complete
