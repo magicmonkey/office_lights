@@ -75,11 +75,22 @@ func main() {
 		log.Fatalf("Failed to initialize schema: %v", err)
 	}
 
-	if err := db.InitDefaultData(); err != nil {
-		log.Fatalf("Failed to initialize default data: %v", err)
+	// Check if database already has data
+	hasData, err := db.HasData()
+	if err != nil {
+		log.Fatalf("Failed to check for existing data: %v", err)
 	}
 
-	log.Println("Database initialized successfully")
+	if hasData {
+		log.Println("Database already contains data, skipping initialization")
+	} else {
+		log.Println("Database is empty, initializing with default data")
+		if err := db.InitDefaultData(); err != nil {
+			log.Fatalf("Failed to initialize default data: %v", err)
+		}
+	}
+
+	log.Println("Database ready")
 
 	// Load state from database
 	log.Println("Loading light states from database...")

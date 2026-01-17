@@ -64,6 +64,39 @@ func (d *Database) InitSchema() error {
 	return nil
 }
 
+// HasData checks if the database has any existing data
+func (d *Database) HasData() (bool, error) {
+	// Check if LED strip has data
+	var count int
+	err := d.db.QueryRow("SELECT COUNT(*) FROM ledstrips WHERE id = 0").Scan(&count)
+	if err != nil && err != sql.ErrNoRows {
+		return false, fmt.Errorf("failed to check for existing data: %w", err)
+	}
+	if count > 0 {
+		return true, nil
+	}
+
+	// Check if any video lights exist
+	err = d.db.QueryRow("SELECT COUNT(*) FROM videolights").Scan(&count)
+	if err != nil && err != sql.ErrNoRows {
+		return false, fmt.Errorf("failed to check for existing data: %w", err)
+	}
+	if count > 0 {
+		return true, nil
+	}
+
+	// Check if LED bar exists
+	err = d.db.QueryRow("SELECT COUNT(*) FROM ledbars WHERE id = 0").Scan(&count)
+	if err != nil && err != sql.ErrNoRows {
+		return false, fmt.Errorf("failed to check for existing data: %w", err)
+	}
+	if count > 0 {
+		return true, nil
+	}
+
+	return false, nil
+}
+
 // InitDefaultData inserts default data if it doesn't exist
 func (d *Database) InitDefaultData() error {
 	log.Println("Storage: Initializing default data...")
