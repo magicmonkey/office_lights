@@ -127,32 +127,37 @@ func ApplyState(
 		return fmt.Errorf("LED strip: %w", err)
 	}
 
-	// LED Bar Section 1 RGBW
+	// LED Bar Section 1 RGBW (use NoPublish to avoid multiple MQTT messages)
 	for i, rgbw := range state.LEDBar.Section1.RGBW {
-		if err := bar.SetRGBW(1, i, rgbw.R, rgbw.G, rgbw.B, rgbw.W); err != nil {
+		if err := bar.SetRGBWNoPublish(1, i, rgbw.R, rgbw.G, rgbw.B, rgbw.W); err != nil {
 			return fmt.Errorf("LED bar section1 RGBW[%d]: %w", i, err)
 		}
 	}
 
 	// LED Bar Section 1 White
 	for i, val := range state.LEDBar.Section1.White {
-		if err := bar.SetWhite(1, i, val); err != nil {
+		if err := bar.SetWhiteNoPublish(1, i, val); err != nil {
 			return fmt.Errorf("LED bar section1 white[%d]: %w", i, err)
 		}
 	}
 
 	// LED Bar Section 2 RGBW
 	for i, rgbw := range state.LEDBar.Section2.RGBW {
-		if err := bar.SetRGBW(2, i, rgbw.R, rgbw.G, rgbw.B, rgbw.W); err != nil {
+		if err := bar.SetRGBWNoPublish(2, i, rgbw.R, rgbw.G, rgbw.B, rgbw.W); err != nil {
 			return fmt.Errorf("LED bar section2 RGBW[%d]: %w", i, err)
 		}
 	}
 
 	// LED Bar Section 2 White
 	for i, val := range state.LEDBar.Section2.White {
-		if err := bar.SetWhite(2, i, val); err != nil {
+		if err := bar.SetWhiteNoPublish(2, i, val); err != nil {
 			return fmt.Errorf("LED bar section2 white[%d]: %w", i, err)
 		}
+	}
+
+	// Publish LED bar state once after all changes
+	if err := bar.Publish(); err != nil {
+		return fmt.Errorf("LED bar publish: %w", err)
 	}
 
 	// Video Light 1

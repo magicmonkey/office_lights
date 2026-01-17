@@ -61,11 +61,23 @@ func NewLEDBarWithState(barID int, publisher Publisher, topic string, store Stat
 	return bar, nil
 }
 
-// SetRGBW sets the RGBW values for a specific LED in a section
+// SetRGBW sets the RGBW values for a specific LED in a section and publishes
 // section: 1 or 2
 // index: 0-5 (which RGBW LED)
 // r, g, b, w: 0-255
 func (l *LEDBar) SetRGBW(section int, index int, r, g, b, w int) error {
+	if err := l.SetRGBWNoPublish(section, index, r, g, b, w); err != nil {
+		return err
+	}
+	return l.Publish()
+}
+
+// SetRGBWNoPublish sets the RGBW values for a specific LED in a section without publishing
+// Use this when making multiple changes, then call Publish() once at the end
+// section: 1 or 2
+// index: 0-5 (which RGBW LED)
+// r, g, b, w: 0-255
+func (l *LEDBar) SetRGBWNoPublish(section int, index int, r, g, b, w int) error {
 	if section != 1 && section != 2 {
 		return fmt.Errorf("section must be 1 or 2, got %d", section)
 	}
@@ -97,14 +109,26 @@ func (l *LEDBar) SetRGBW(section int, index int, r, g, b, w int) error {
 		l.rgbw2[index][3] = w
 	}
 
-	return l.Publish()
+	return nil
 }
 
-// SetWhite sets the white LED value for a specific LED in a section
+// SetWhite sets the white LED value for a specific LED in a section and publishes
 // section: 1 or 2
 // index: 0-12 (which white LED)
 // value: 0-255
 func (l *LEDBar) SetWhite(section int, index int, value int) error {
+	if err := l.SetWhiteNoPublish(section, index, value); err != nil {
+		return err
+	}
+	return l.Publish()
+}
+
+// SetWhiteNoPublish sets the white LED value for a specific LED in a section without publishing
+// Use this when making multiple changes, then call Publish() once at the end
+// section: 1 or 2
+// index: 0-12 (which white LED)
+// value: 0-255
+func (l *LEDBar) SetWhiteNoPublish(section int, index int, value int) error {
 	if section != 1 && section != 2 {
 		return fmt.Errorf("section must be 1 or 2, got %d", section)
 	}
@@ -121,7 +145,7 @@ func (l *LEDBar) SetWhite(section int, index int, value int) error {
 		l.white2[index] = value
 	}
 
-	return l.Publish()
+	return nil
 }
 
 // GetRGBW returns the RGBW values for a specific LED in a section
