@@ -1,0 +1,160 @@
+package ledstrip
+
+import (
+	"encoding/json"
+	"fmt"
+)
+
+// Publisher defines the interface for publishing MQTT messages
+type Publisher interface {
+	Publish(topic string, payload interface{}) error
+}
+
+// LEDStrip represents an RGB LED strip controller
+type LEDStrip struct {
+	r         int
+	g         int
+	b         int
+	publisher Publisher
+	topic     string
+}
+
+// sequenceMessage represents the JSON structure for LED strip commands
+type sequenceMessage struct {
+	Sequence string      `json:"sequence"`
+	Data     sequenceData `json:"data"`
+}
+
+// sequenceData represents the RGB data in the sequence message
+type sequenceData struct {
+	R int `json:"r"`
+	G int `json:"g"`
+	B int `json:"b"`
+}
+
+// NewLEDStrip creates a new LED strip controller
+func NewLEDStrip(publisher Publisher, topic string) *LEDStrip {
+	return &LEDStrip{
+		r:         0,
+		g:         0,
+		b:         0,
+		publisher: publisher,
+		topic:     topic,
+	}
+}
+
+// SetColor sets the RGB color values and publishes the update
+func (l *LEDStrip) SetColor(r, g, b int) error {
+	if err := validateRGB(r, g, b); err != nil {
+		return err
+	}
+
+	l.r = r
+	l.g = g
+	l.b = b
+
+	return l.Publish()
+}
+
+// GetColor returns the current RGB color values
+func (l *LEDStrip) GetColor() (int, int, int) {
+	return l.r, l.g, l.b
+}
+
+// TurnOff turns off the LED strip by setting all colors to 0
+func (l *LEDStrip) TurnOff() error {
+	return l.SetColor(0, 0, 0)
+}
+
+// SetBrightness adjusts the current color by a percentage (0-100)
+func (l *LEDStrip) SetBrightness(percentage int) error {
+	if percentage < 0 || percentage > 100 {
+		return fmt.Errorf("brightness must be between 0 and 100, got %d", percentage)
+	}
+
+	scale := float64(percentage) / 100.0
+	r := int(float64(l.r) * scale)
+	g := int(float64(l.g) * scale)
+	b := int(float64(l.b) * scale)
+
+	return l.SetColor(r, g, b)
+}
+
+// Publish formats and publishes the current state to MQTT
+func (l *LEDStrip) Publish() error {
+	payload, err := l.formatMessage()
+	if err != nil {
+		return fmt.Errorf("failed to format message: %w", err)
+	}
+
+	if err := l.publisher.Publish(l.topic, payload); err != nil {
+		return fmt.Errorf("failed to publish: %w", err)
+	}
+
+	return nil
+}
+
+// formatMessage creates the JSON message for the LED strip
+func (l *LEDStrip) formatMessage() ([]byte, error) {
+	msg := sequenceMessage{
+		Sequence: "fill",
+		Data: sequenceData{
+			R: l.r,
+			G: l.g,
+			B: l.b,
+		},
+	}
+
+	return json.Marshal(msg)
+}
+
+// validateRGB validates that RGB values are in the valid range (0-255)
+func validateRGB(r, g, b int) error {
+	if r < 0 || r > 255 {
+		return fmt.Errorf("red value must be between 0 and 255, got %d", r)
+	}
+	if g < 0 || g > 255 {
+		return fmt.Errorf("green value must be between 0 and 255, got %d", g)
+	}
+	if b < 0 || b > 255 {
+		return fmt.Errorf("blue value must be between 0 and 255, got %d", b)
+	}
+	return nil
+}
+
+// Preset color methods for convenience
+
+// SetRed sets the strip to red
+func (l *LEDStrip) SetRed() error {
+	return l.SetColor(255, 0, 0)
+}
+
+// SetGreen sets the strip to green
+func (l *LEDStrip) SetGreen() error {
+	return l.SetColor(0, 255, 0)
+}
+
+// SetBlue sets the strip to blue
+func (l *LEDStrip) SetBlue() error {
+	return l.SetColor(0, 0, 255)
+}
+
+// SetWhite sets the strip to white
+func (l *LEDStrip) SetWhite() error {
+	return l.SetColor(255, 255, 255)
+}
+
+// SetYellow sets the strip to yellow
+func (l *LEDStrip) SetYellow() error {
+	return l.SetColor(255, 255, 0)
+}
+
+// SetCyan sets the strip to cyan
+func (l *LEDStrip) SetCyan() error {
+	return l.SetColor(0, 255, 255)
+}
+
+// SetMagenta sets the strip to magenta
+func (l *LEDStrip) SetMagenta() error {
+	return l.SetColor(255, 0, 255)
+}

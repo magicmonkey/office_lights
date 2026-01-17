@@ -29,3 +29,16 @@ There will be a user-interface in the future, containing buttons and dials to al
 
 The `main.go` file in the root contains the orchestration code.
 
+# Additional features
+
+## State storage
+
+The state of all of the lights should be stored in a sqlite3 file in the current directory, called "lights.sqlite3".  The table/column structure is:
+
+ledbars : id
+ledbars_leds : id, ledbar_id, channel_num, value
+ledstrips : id, red, green, blue
+videolights : id, on, brightness
+
+The state should be loaded on startup by querying the sqlite file, and saved back to the file every time a value changes and is published to MQTT.  Since there is only 1 LED bar and 1 LED strip, they are hard-coded as ID 0, and the 2 videolights are hard-coded as IDs 0 and 1.
+
