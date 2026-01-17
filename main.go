@@ -1,6 +1,7 @@
 package main
 
 import (
+	"io"
 	"log"
 	"os"
 	"os/signal"
@@ -15,6 +16,20 @@ import (
 )
 
 func main() {
+	// Check if TUI mode is requested early to suppress logs
+	useTUI := false
+	if len(os.Args) > 1 && os.Args[1] == "tui" {
+		useTUI = true
+	}
+	if os.Getenv("TUI") != "" {
+		useTUI = true
+	}
+
+	// Disable logging if TUI mode is active
+	if useTUI {
+		log.SetOutput(io.Discard)
+	}
+
 	log.Println("Office Lights Control System Starting...")
 
 	// Get MQTT broker address from environment variable or use default
@@ -164,15 +179,6 @@ func main() {
 	log.Println("Initial state published")
 
 	log.Println("Office Lights Control System Ready")
-
-	// Check if TUI mode is requested
-	useTUI := false
-	if len(os.Args) > 1 && os.Args[1] == "tui" {
-		useTUI = true
-	}
-	if os.Getenv("TUI") != "" {
-		useTUI = true
-	}
 
 	if useTUI {
 		log.Println("Starting TUI mode...")

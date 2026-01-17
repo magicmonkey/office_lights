@@ -106,6 +106,7 @@ This document summarizes the implementation of the Office Lights Control System.
   - 4-section layout (LED Strip, LED Bar, Video Light 1, Video Light 2)
   - Full keyboard navigation
   - Real-time MQTT publishing and database saves
+  - Log output suppressed in TUI mode to prevent display interference
 - Component models for each light type
 - Keyboard controls:
   - TAB/Shift+TAB for section navigation

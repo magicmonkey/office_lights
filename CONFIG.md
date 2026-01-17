@@ -78,6 +78,8 @@ export TUI=1
 ./office_lights
 ```
 
+**Note:** When TUI mode is active, all log output is suppressed to avoid interfering with the terminal display.
+
 **TUI Controls:**
 - `TAB` - Switch between light sections
 - `Shift+TAB` - Switch to previous section
