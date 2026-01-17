@@ -3,11 +3,17 @@ package ledstrip
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 )
 
 // Publisher defines the interface for publishing MQTT messages
 type Publisher interface {
 	Publish(topic string, payload interface{}) error
+}
+
+// StateStore defines the interface for persistent state storage
+type StateStore interface {
+	SaveLEDStripState(id int, r, g, b int) error
 }
 
 // LEDStrip represents an RGB LED strip controller
@@ -17,6 +23,8 @@ type LEDStrip struct {
 	b         int
 	publisher Publisher
 	topic     string
+	store     StateStore
+	id        int
 }
 
 // sequenceMessage represents the JSON structure for LED strip commands
@@ -32,14 +40,21 @@ type sequenceData struct {
 	B int `json:"b"`
 }
 
-// NewLEDStrip creates a new LED strip controller
+// NewLEDStrip creates a new LED strip controller with default state (all off)
 func NewLEDStrip(publisher Publisher, topic string) *LEDStrip {
+	return NewLEDStripWithState(publisher, topic, nil, 0, 0, 0, 0)
+}
+
+// NewLEDStripWithState creates LED strip with initial state from storage
+func NewLEDStripWithState(publisher Publisher, topic string, store StateStore, id int, r, g, b int) *LEDStrip {
 	return &LEDStrip{
-		r:         0,
-		g:         0,
-		b:         0,
+		r:         r,
+		g:         g,
+		b:         b,
 		publisher: publisher,
 		topic:     topic,
+		store:     store,
+		id:        id,
 	}
 }
 
@@ -89,6 +104,15 @@ func (l *LEDStrip) Publish() error {
 
 	if err := l.publisher.Publish(l.topic, payload); err != nil {
 		return fmt.Errorf("failed to publish: %w", err)
+	}
+
+	// Save state to storage after successful publish
+	if l.store != nil {
+		if err := l.store.SaveLEDStripState(l.id, l.r, l.g, l.b); err != nil {
+			// Log error but don't fail the operation
+			// State will be out of sync, but light was updated
+			log.Printf("Warning: Failed to save LED strip state: %v", err)
+		}
 	}
 
 	return nil

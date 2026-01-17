@@ -2,12 +2,18 @@ package videolight
 
 import (
 	"fmt"
+	"log"
 	"strings"
 )
 
 // Publisher defines the interface for publishing MQTT messages
 type Publisher interface {
 	Publish(topic string, payload interface{}) error
+}
+
+// StateStore defines the interface for persistent state storage
+type StateStore interface {
+	SaveVideoLightState(id int, on bool, brightness int) error
 }
 
 // VideoLight represents a video light controller
@@ -17,20 +23,33 @@ type VideoLight struct {
 	lightID    int
 	publisher  Publisher
 	topic      string
+	store      StateStore
 }
 
-// NewVideoLight creates a new video light controller
+// NewVideoLight creates a new video light controller with default state (off)
 func NewVideoLight(lightID int, publisher Publisher, topic string) (*VideoLight, error) {
+	return NewVideoLightWithState(lightID, publisher, topic, nil, false, 0)
+}
+
+// NewVideoLightWithState creates video light with initial state from storage
+func NewVideoLightWithState(lightID int, publisher Publisher, topic string, store StateStore, on bool, brightness int) (*VideoLight, error) {
 	if lightID < 1 {
 		return nil, fmt.Errorf("lightID must be positive, got %d", lightID)
 	}
 
+	// Validate and fix any invalid stored state
+	if err := validateBrightness(brightness); err != nil {
+		brightness = 0
+		on = false
+	}
+
 	return &VideoLight{
-		on:         false,
-		brightness: 0,
+		on:         on,
+		brightness: brightness,
 		lightID:    lightID,
 		publisher:  publisher,
 		topic:      topic,
+		store:      store,
 	}, nil
 }
 
@@ -77,6 +96,16 @@ func (v *VideoLight) Publish() error {
 
 	if err := v.publisher.Publish(v.topic, payload); err != nil {
 		return fmt.Errorf("failed to publish: %w", err)
+	}
+
+	// Save state to storage after successful publish
+	if v.store != nil {
+		// Convert driver ID (1, 2) to database ID (0, 1)
+		dbID := v.lightID - 1
+		if err := v.store.SaveVideoLightState(dbID, v.on, v.brightness); err != nil {
+			// Log error but don't fail the operation
+			log.Printf("Warning: Failed to save video light state: %v", err)
+		}
 	}
 
 	return nil

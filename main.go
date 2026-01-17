@@ -10,6 +10,7 @@ import (
 	"github.com/kevin/office_lights/drivers/ledstrip"
 	"github.com/kevin/office_lights/drivers/videolight"
 	officemqtt "github.com/kevin/office_lights/mqtt"
+	"github.com/kevin/office_lights/storage"
 )
 
 // Lights holds all light driver instances
@@ -56,28 +57,87 @@ func main() {
 
 	log.Println("MQTT client connected successfully")
 
-	// Instantiate light drivers
-	log.Println("Initializing light drivers...")
+	// Get database path from environment variable or use default
+	dbPath := os.Getenv("DB_PATH")
+	if dbPath == "" {
+		dbPath = "lights.sqlite3"
+	}
+
+	// Create and initialize database
+	log.Printf("Opening database at %s...", dbPath)
+	db, err := storage.NewDatabase(dbPath)
+	if err != nil {
+		log.Fatalf("Failed to create database: %v", err)
+	}
+	defer db.Close()
+
+	if err := db.InitSchema(); err != nil {
+		log.Fatalf("Failed to initialize schema: %v", err)
+	}
+
+	if err := db.InitDefaultData(); err != nil {
+		log.Fatalf("Failed to initialize default data: %v", err)
+	}
+
+	log.Println("Database initialized successfully")
+
+	// Load state from database
+	log.Println("Loading light states from database...")
+
+	// Load LED strip state
+	stripR, stripG, stripB, err := db.LoadLEDStripState(0)
+	if err != nil {
+		log.Printf("Warning: Failed to load LED strip state, using defaults: %v", err)
+		stripR, stripG, stripB = 0, 0, 0
+	}
+	log.Printf("Loaded LED strip state: R=%d, G=%d, B=%d", stripR, stripG, stripB)
+
+	// Load LED bar state
+	ledBarChannels, err := db.LoadLEDBarChannels(0)
+	if err != nil {
+		log.Printf("Warning: Failed to load LED bar state, using defaults: %v", err)
+		ledBarChannels = make([]int, 77)
+	}
+	log.Printf("Loaded LED bar state: %d channels", len(ledBarChannels))
+
+	// Load video light 1 state (database ID 0 -> driver ID 1)
+	vl1On, vl1Brightness, err := db.LoadVideoLightState(0)
+	if err != nil {
+		log.Printf("Warning: Failed to load video light 1 state, using defaults: %v", err)
+		vl1On, vl1Brightness = false, 0
+	}
+	log.Printf("Loaded video light 1 state: on=%v, brightness=%d", vl1On, vl1Brightness)
+
+	// Load video light 2 state (database ID 1 -> driver ID 2)
+	vl2On, vl2Brightness, err := db.LoadVideoLightState(1)
+	if err != nil {
+		log.Printf("Warning: Failed to load video light 2 state, using defaults: %v", err)
+		vl2On, vl2Brightness = false, 0
+	}
+	log.Printf("Loaded video light 2 state: on=%v, brightness=%d", vl2On, vl2Brightness)
+
+	// Instantiate light drivers with loaded state
+	log.Println("Initializing light drivers with stored state...")
 
 	// LED Strip
-	ledStrip := ledstrip.NewLEDStrip(mqttClient, officemqtt.TopicLEDStrip)
+	ledStrip := ledstrip.NewLEDStripWithState(mqttClient, officemqtt.TopicLEDStrip, db, 0, stripR, stripG, stripB)
 	log.Println("LED Strip driver initialized")
 
 	// LED Bar
-	ledBar, err := ledbar.NewLEDBar(0, mqttClient, officemqtt.TopicLEDBar)
+	ledBar, err := ledbar.NewLEDBarWithState(0, mqttClient, officemqtt.TopicLEDBar, db, ledBarChannels)
 	if err != nil {
 		log.Fatalf("Failed to create LED bar: %v", err)
 	}
 	log.Println("LED Bar driver initialized")
 
 	// Video Lights
-	videoLight1, err := videolight.NewVideoLight(1, mqttClient, officemqtt.TopicVideoLight1)
+	videoLight1, err := videolight.NewVideoLightWithState(1, mqttClient, officemqtt.TopicVideoLight1, db, vl1On, vl1Brightness)
 	if err != nil {
 		log.Fatalf("Failed to create video light 1: %v", err)
 	}
 	log.Println("Video Light 1 driver initialized")
 
-	videoLight2, err := videolight.NewVideoLight(2, mqttClient, officemqtt.TopicVideoLight2)
+	videoLight2, err := videolight.NewVideoLightWithState(2, mqttClient, officemqtt.TopicVideoLight2, db, vl2On, vl2Brightness)
 	if err != nil {
 		log.Fatalf("Failed to create video light 2: %v", err)
 	}
@@ -90,6 +150,22 @@ func main() {
 		VideoLight1: videoLight1,
 		VideoLight2: videoLight2,
 	}
+
+	// Publish initial state to MQTT (sync physical lights with stored state)
+	log.Println("Publishing initial state to MQTT...")
+	if err := ledStrip.Publish(); err != nil {
+		log.Printf("Warning: Failed to publish LED strip initial state: %v", err)
+	}
+	if err := ledBar.Publish(); err != nil {
+		log.Printf("Warning: Failed to publish LED bar initial state: %v", err)
+	}
+	if err := videoLight1.Publish(); err != nil {
+		log.Printf("Warning: Failed to publish video light 1 initial state: %v", err)
+	}
+	if err := videoLight2.Publish(); err != nil {
+		log.Printf("Warning: Failed to publish video light 2 initial state: %v", err)
+	}
+	log.Println("Initial state published")
 
 	// Demonstrate basic functionality (optional - can be removed)
 	demonstrateLights(lights)

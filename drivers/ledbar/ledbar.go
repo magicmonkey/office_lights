@@ -2,6 +2,7 @@ package ledbar
 
 import (
 	"fmt"
+	"log"
 	"strconv"
 	"strings"
 )
@@ -9,6 +10,11 @@ import (
 // Publisher defines the interface for publishing MQTT messages
 type Publisher interface {
 	Publish(topic string, payload interface{}) error
+}
+
+// StateStore defines the interface for persistent state storage
+type StateStore interface {
+	SaveLEDBarChannels(ledbarID int, channels []int) error
 }
 
 // LEDBar represents an RGBW LED bar controller
@@ -25,10 +31,17 @@ type LEDBar struct {
 	barID     int
 	publisher Publisher
 	topic     string
+	store     StateStore
 }
 
-// NewLEDBar creates a new LED bar controller
+// NewLEDBar creates a new LED bar controller with default state (all off)
 func NewLEDBar(barID int, publisher Publisher, topic string) (*LEDBar, error) {
+	channels := make([]int, 77)
+	return NewLEDBarWithState(barID, publisher, topic, nil, channels)
+}
+
+// NewLEDBarWithState creates LED bar with initial state from storage
+func NewLEDBarWithState(barID int, publisher Publisher, topic string, store StateStore, channels []int) (*LEDBar, error) {
 	if barID < 0 {
 		return nil, fmt.Errorf("barID must be non-negative, got %d", barID)
 	}
@@ -37,24 +50,12 @@ func NewLEDBar(barID int, publisher Publisher, topic string) (*LEDBar, error) {
 		barID:     barID,
 		publisher: publisher,
 		topic:     topic,
+		store:     store,
 	}
 
-	// Initialize all values to 0 (off)
-	for i := range bar.rgbw1 {
-		for j := range bar.rgbw1[i] {
-			bar.rgbw1[i][j] = 0
-		}
-	}
-	for i := range bar.white1 {
-		bar.white1[i] = 0
-	}
-	for i := range bar.rgbw2 {
-		for j := range bar.rgbw2[i] {
-			bar.rgbw2[i][j] = 0
-		}
-	}
-	for i := range bar.white2 {
-		bar.white2[i] = 0
+	// Load state from channels array
+	if err := bar.loadFromChannels(channels); err != nil {
+		return nil, fmt.Errorf("failed to load channels: %w", err)
 	}
 
 	return bar, nil
@@ -259,6 +260,15 @@ func (l *LEDBar) Publish() error {
 		return fmt.Errorf("failed to publish: %w", err)
 	}
 
+	// Save state to storage after successful publish
+	if l.store != nil {
+		channels := l.getChannels()
+		if err := l.store.SaveLEDBarChannels(l.barID, channels); err != nil {
+			// Log error but don't fail the operation
+			log.Printf("Warning: Failed to save LED bar state: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -313,4 +323,85 @@ func validateValue(value int) error {
 // GetBarID returns the bar ID
 func (l *LEDBar) GetBarID() int {
 	return l.barID
+}
+
+// loadFromChannels populates LED states from 77-value channel array
+func (l *LEDBar) loadFromChannels(channels []int) error {
+	if len(channels) != 77 {
+		return fmt.Errorf("expected 77 channels, got %d", len(channels))
+	}
+
+	idx := 0
+
+	// Load first section RGBW (24 values)
+	for i := 0; i < 6; i++ {
+		for j := 0; j < 4; j++ {
+			l.rgbw1[i][j] = channels[idx]
+			idx++
+		}
+	}
+
+	// Load first section white (13 values)
+	for i := 0; i < 13; i++ {
+		l.white1[i] = channels[idx]
+		idx++
+	}
+
+	// Skip 3 ignored values
+	idx += 3
+
+	// Load second section RGBW (24 values)
+	for i := 0; i < 6; i++ {
+		for j := 0; j < 4; j++ {
+			l.rgbw2[i][j] = channels[idx]
+			idx++
+		}
+	}
+
+	// Load second section white (13 values)
+	for i := 0; i < 13; i++ {
+		l.white2[i] = channels[idx]
+		idx++
+	}
+
+	return nil
+}
+
+// getChannels returns current state as 77-value array
+func (l *LEDBar) getChannels() []int {
+	channels := make([]int, 77)
+	idx := 0
+
+	// First section RGBW
+	for i := 0; i < 6; i++ {
+		for j := 0; j < 4; j++ {
+			channels[idx] = l.rgbw1[i][j]
+			idx++
+		}
+	}
+
+	// First section white
+	for i := 0; i < 13; i++ {
+		channels[idx] = l.white1[i]
+		idx++
+	}
+
+	// 3 ignored values (already 0 from make)
+	idx += 3
+
+	// Second section RGBW
+	for i := 0; i < 6; i++ {
+		for j := 0; j < 4; j++ {
+			channels[idx] = l.rgbw2[i][j]
+			idx++
+		}
+	}
+
+	// Second section white
+	for i := 0; i < 13; i++ {
+		channels[idx] = l.white2[i]
+		idx++
+	}
+
+	return channels
 }
