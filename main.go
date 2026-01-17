@@ -13,6 +13,7 @@ import (
 	officemqtt "github.com/kevin/office_lights/mqtt"
 	"github.com/kevin/office_lights/storage"
 	"github.com/kevin/office_lights/tui"
+	"github.com/kevin/office_lights/web"
 )
 
 func main() {
@@ -25,7 +26,16 @@ func main() {
 		useTUI = true
 	}
 
-	// Disable logging if TUI mode is active
+	// Check if web mode is requested
+	useWeb := false
+	if len(os.Args) > 1 && os.Args[1] == "web" {
+		useWeb = true
+	}
+	if os.Getenv("WEB") != "" {
+		useWeb = true
+	}
+
+	// Disable logging if TUI mode is active (web mode still shows logs)
 	if useTUI {
 		log.SetOutput(io.Discard)
 	}
@@ -187,6 +197,27 @@ func main() {
 		}
 		log.Println("TUI exited")
 		return
+	}
+
+	if useWeb {
+		// Get web server port from environment variable or use default
+		port := os.Getenv("WEB_PORT")
+		if port == "" {
+			port = "8080"
+		}
+
+		// Create and start web server
+		webServer := web.NewServer(ledStrip, ledBar, videoLight1, videoLight2)
+
+		// Start web server in a goroutine so it doesn't block
+		go func() {
+			log.Printf("Starting web interface on port %s...", port)
+			if err := webServer.Start(port); err != nil {
+				log.Fatalf("Web server error: %v", err)
+			}
+		}()
+
+		log.Printf("Web interface available at http://localhost:%s", port)
 	}
 
 	// Set up graceful shutdown

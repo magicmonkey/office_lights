@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Office Lights Control</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Office Lights Control</h1>
+            <div class="status">
+                <span id="connection-status" class="disconnected">Connecting...</span>
+                <span id="last-update">Never</span>
+            </div>
+        </header>
+
+        <main class="grid">
+            <!-- LED Strip -->
+            <section class="card">
+                <h2>LED Strip</h2>
+                <div class="control-group">
+                    <label for="strip-r">Red <span id="strip-r-value" class="value">0</span></label>
+                    <input type="range" id="strip-r" min="0" max="255" value="0">
+                </div>
+                <div class="control-group">
+                    <label for="strip-g">Green <span id="strip-g-value" class="value">0</span></label>
+                    <input type="range" id="strip-g" min="0" max="255" value="0">
+                </div>
+                <div class="control-group">
+                    <label for="strip-b">Blue <span id="strip-b-value" class="value">0</span></label>
+                    <input type="range" id="strip-b" min="0" max="255" value="0">
+                </div>
+                <div class="control-group">
+                    <label for="strip-color">Color Picker</label>
+                    <input type="color" id="strip-color" value="#000000">
+                </div>
+                <div class="preview" id="strip-preview"></div>
+            </section>
+
+            <!-- LED Bar -->
+            <section class="card">
+                <h2>LED Bar</h2>
+                <div class="control-group">
+                    <label>Section</label>
+                    <div class="button-group">
+                        <button id="ledbar-section-1" class="active">Section 1</button>
+                        <button id="ledbar-section-2">Section 2</button>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label>Mode</label>
+                    <div class="button-group">
+                        <button id="ledbar-mode-rgbw" class="active">RGBW</button>
+                        <button id="ledbar-mode-white">White</button>
+                    </div>
+                </div>
+                <div id="ledbar-rgbw-controls">
+                    <div class="control-group">
+                        <label for="ledbar-led">LED (1-6)</label>
+                        <input type="number" id="ledbar-led" min="1" max="6" value="1">
+                    </div>
+                    <div class="control-group">
+                        <label for="ledbar-r">Red <span id="ledbar-r-value" class="value">0</span></label>
+                        <input type="range" id="ledbar-r" min="0" max="255" value="0">
+                    </div>
+                    <div class="control-group">
+                        <label for="ledbar-g">Green <span id="ledbar-g-value" class="value">0</span></label>
+                        <input type="range" id="ledbar-g" min="0" max="255" value="0">
+                    </div>
+                    <div class="control-group">
+                        <label for="ledbar-b">Blue <span id="ledbar-b-value" class="value">0</span></label>
+                        <input type="range" id="ledbar-b" min="0" max="255" value="0">
+                    </div>
+                    <div class="control-group">
+                        <label for="ledbar-w">White <span id="ledbar-w-value" class="value">0</span></label>
+                        <input type="range" id="ledbar-w" min="0" max="255" value="0">
+                    </div>
+                </div>
+                <div id="ledbar-white-controls" style="display: none;">
+                    <div class="control-group">
+                        <label for="ledbar-white-led">LED (1-13)</label>
+                        <input type="number" id="ledbar-white-led" min="1" max="13" value="1">
+                    </div>
+                    <div class="control-group">
+                        <label for="ledbar-white">Brightness <span id="ledbar-white-value" class="value">0</span></label>
+                        <input type="range" id="ledbar-white" min="0" max="255" value="0">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Video Light 1 -->
+            <section class="card">
+                <h2>Video Light 1</h2>
+                <div class="control-group">
+                    <label for="vl1-on">Power</label>
+                    <label class="switch">
+                        <input type="checkbox" id="vl1-on">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="control-group">
+                    <label for="vl1-brightness">Brightness <span id="vl1-brightness-value" class="value">0</span></label>
+                    <input type="range" id="vl1-brightness" min="0" max="100" value="0">
+                </div>
+                <div class="indicator" id="vl1-indicator"></div>
+            </section>
+
+            <!-- Video Light 2 -->
+            <section class="card">
+                <h2>Video Light 2</h2>
+                <div class="control-group">
+                    <label for="vl2-on">Power</label>
+                    <label class="switch">
+                        <input type="checkbox" id="vl2-on">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="control-group">
+                    <label for="vl2-brightness">Brightness <span id="vl2-brightness-value" class="value">0</span></label>
+                    <input type="range" id="vl2-brightness" min="0" max="100" value="0">
+                </div>
+                <div class="indicator" id="vl2-indicator"></div>
+            </section>
+        </main>
+
+        <footer>
+            <div id="error-message" class="error" style="display: none;"></div>
+        </footer>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

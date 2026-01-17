@@ -34,6 +34,14 @@ The office lights control system can be configured using the following environme
   - When set to any value, starts the terminal UI
   - Alternative: run with `./office_lights tui` argument
 
+- `WEB` - Enable web interface mode (optional)
+  - When set to any value, starts the web server
+  - Alternative: run with `./office_lights web` argument
+
+- `WEB_PORT` - Web server port (default: `8080`)
+  - Only used when web mode is enabled
+  - Example: `3000`
+
 ## Example Usage
 
 ### Basic (Local MQTT Broker)
@@ -88,6 +96,35 @@ export TUI=1
 - `Shift+↑` `Shift+↓` - Increase/decrease value by 10
 - `Enter` - Toggle on/off (video lights only)
 - `ESC` or `Ctrl+C` - Exit TUI
+
+### Web Mode (Web Interface)
+
+Run with browser-based UI:
+
+```bash
+# Using command line argument (default port 8080)
+./office_lights web
+
+# Or using environment variable
+export WEB=1
+./office_lights
+
+# With custom port
+export WEB_PORT=3000
+./office_lights web
+```
+
+**Accessing the interface:**
+- Open your browser to `http://localhost:8080` (or your custom port)
+- The interface works on desktop and mobile devices
+- Multiple browser windows can access the interface simultaneously
+
+**Web Interface Features:**
+- Real-time control of all lights
+- Visual previews and indicators
+- Color picker for LED strip
+- Automatic state synchronization (polls every 3 seconds)
+- Debounced updates (300ms delay) to prevent excessive MQTT messages
 
 ## Building
 

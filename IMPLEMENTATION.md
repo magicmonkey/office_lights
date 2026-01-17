@@ -117,6 +117,31 @@ This document summarizes the implementation of the Office Lights Control System.
 - Entry point: `./office_lights tui` or `TUI=1 ./office_lights`
 - Uses existing driver methods - no separate MQTT handling
 
+### ✅ Phase 12: Web User Interface
+- `web/` package - Browser-based interactive UI
+  - REST API with complete state transfer
+  - Embedded static files (no external dependencies)
+  - 2×2 grid layout (LED Strip, LED Bar, Video Light 1, Video Light 2)
+  - Real-time control with visual feedback
+  - Mutex protection for concurrent access
+  - Polling strategy for state updates (every 3 seconds)
+  - Debounced user input (300ms delay)
+- Components:
+  - `web/web.go` - HTTP server with embedded static files
+  - `web/api.go` - GET/POST /api handlers
+  - `web/state.go` - State structures, BuildState(), ApplyState(), Validate()
+  - `web/static/index.html` - HTML interface with controls
+  - `web/static/style.css` - Responsive dark-themed CSS
+  - `web/static/app.js` - JavaScript with fetch API and polling
+- API endpoints:
+  - GET /api - Returns complete state as JSON
+  - POST /api - Accepts and applies complete state
+  - GET /health - Health check endpoint
+- Entry point: `./office_lights web` or `WEB=1 ./office_lights`
+- Web server runs in goroutine, doesn't block main application
+- Supports desktop and mobile browsers
+- Environment variable: `WEB_PORT` (default: 8080)
+
 ## Project Structure
 
 ```
@@ -154,6 +179,14 @@ office_lights/
 │   ├── ledstrip.go                 # LED strip component
 │   ├── ledbar.go                   # LED bar component
 │   └── videolight.go               # Video light component
+├── web/
+│   ├── web.go                      # HTTP server setup
+│   ├── api.go                      # API handlers
+│   ├── state.go                    # State management
+│   └── static/
+│       ├── index.html              # HTML interface
+│       ├── style.css               # CSS styling
+│       └── app.js                  # JavaScript logic
 ├── spec/                            # Implementation specs
 ├── go.mod                           # Go module
 ├── go.sum                           # Dependencies
@@ -229,6 +262,8 @@ Set via environment variables:
 - `MQTT_PASSWORD` - Optional password
 - `DB_PATH` - Database file path (default: `lights.sqlite3`)
 - `TUI` - Enable text user interface mode (optional)
+- `WEB` - Enable web interface mode (optional)
+- `WEB_PORT` - Web server port (default: `8080`)
 
 ## Running the Application
 
@@ -264,6 +299,23 @@ TUI=1 ./office_lights
 - Shift+↑↓: Adjust values (+10/-10)
 - Enter: Toggle on/off (video lights)
 - ESC/Ctrl+C: Exit
+
+### Run with Web Interface
+```bash
+# Using command line argument (default port 8080)
+./office_lights web
+
+# Or using environment variable
+WEB=1 ./office_lights
+
+# With custom port
+WEB_PORT=3000 ./office_lights web
+```
+
+**Access the interface:**
+- Open browser to `http://localhost:8080` (or your custom port)
+- Works on desktop and mobile browsers
+- Multiple browser windows can access simultaneously
 
 ### Run tests
 ```bash
