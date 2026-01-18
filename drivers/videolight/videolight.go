@@ -70,9 +70,9 @@ func (v *VideoLight) TurnOn(brightness int) error {
 	return v.SetState(true, brightness)
 }
 
-// TurnOff turns off the light
+// TurnOff turns off the light, preserving the brightness value
 func (v *VideoLight) TurnOff() error {
-	return v.SetState(false, 0)
+	return v.SetState(false, v.brightness)
 }
 
 // SetBrightness sets the brightness while maintaining the current on/off state

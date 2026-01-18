@@ -306,16 +306,28 @@ func (s *StreamDeckUI) adjustVideoLights(dialIndex int, increment int) {
 	switch dialIndex {
 	case 0: // Video Light 1
 		on := s.videoLight1.IsOn()
-		brightness := clamp(s.videoLight1.Brightness() + increment)
-		if on {
+		if !on && increment > 0 {
+			// Light is off and dial turning up: turn on at brightness 0, then nudge up
+			brightness := clamp100(increment)
+			if err := s.videoLight1.TurnOn(brightness); err != nil {
+				log.Printf("Error turning on video light 1: %v", err)
+			}
+		} else if on {
+			brightness := clamp100(s.videoLight1.Brightness() + increment)
 			if err := s.videoLight1.TurnOn(brightness); err != nil {
 				log.Printf("Error setting video light 1 brightness: %v", err)
 			}
 		}
 	case 1: // Video Light 2
 		on := s.videoLight2.IsOn()
-		brightness := clamp(s.videoLight2.Brightness() + increment)
-		if on {
+		if !on && increment > 0 {
+			// Light is off and dial turning up: turn on at brightness 0, then nudge up
+			brightness := clamp100(increment)
+			if err := s.videoLight2.TurnOn(brightness); err != nil {
+				log.Printf("Error turning on video light 2: %v", err)
+			}
+		} else if on {
+			brightness := clamp100(s.videoLight2.Brightness() + increment)
 			if err := s.videoLight2.TurnOn(brightness); err != nil {
 				log.Printf("Error setting video light 2 brightness: %v", err)
 			}
@@ -363,6 +375,17 @@ func clamp(value int) int {
 	}
 	if value > 255 {
 		return 255
+	}
+	return value
+}
+
+// Helper function to clamp values to 0-100 range (for video lights)
+func clamp100(value int) int {
+	if value < 0 {
+		return 0
+	}
+	if value > 100 {
+		return 100
 	}
 	return value
 }

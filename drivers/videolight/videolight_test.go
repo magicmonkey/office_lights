@@ -147,8 +147,8 @@ func TestTurnOff(t *testing.T) {
 	if on {
 		t.Error("Expected light to be off")
 	}
-	if brightness != 0 {
-		t.Errorf("Expected brightness 0, got %d", brightness)
+	if brightness != 50 {
+		t.Errorf("Expected brightness to be preserved at 50, got %d", brightness)
 	}
 
 	if mock.MessageCount() != 1 {
