@@ -1,7 +1,7 @@
 
 # Introduction
 
-This is a go project.
+This is a go project.  Claude Code helped to write the source code.
 
 It controls 3 different types of light units, by sending various MQTT messages:
 
