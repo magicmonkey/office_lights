@@ -1,5 +1,5 @@
-
-# Introduction
+Introduction
+============
 
 This is a go project.  Claude Code helped to write the source code.
 
@@ -21,7 +21,8 @@ set,<on>,<brightness>
 for example this message will turn the light on to half brightness:
 set,true,50
 
-# Structure
+Structure
+=========
 
 There is a folder "drivers", containing a folder for each of the types of light.  These drivers keep information about the current state of the relevant lights, and format the correct messages for publishing.  They get instantiated for each instance of that type of light.
 
@@ -29,9 +30,11 @@ There will be a user-interface in the future, containing buttons and dials to al
 
 The `main.go` file in the root contains the orchestration code.
 
-# Additional features
+Features
+========
 
-## State storage
+State storage
+-------------
 
 The state of all of the lights should be stored in a sqlite3 file in the current directory, called "lights.sqlite3".  The table/column structure is:
 
@@ -42,15 +45,18 @@ videolights : id, on, brightness
 
 The state should be loaded on startup by querying the sqlite file, and saved back to the file every time a value changes and is published to MQTT.  Since there is only 1 LED bar and 1 LED strip, they are hard-coded as ID 0, and the 2 videolights are hard-coded as IDs 0 and 1.
 
-# User interfaces
+User interfaces
+===============
 
 Multiple UIs are able to be run simultaneously.
 
-## TUI
+TUI
+---
 
 One of the user-interfaces is a text user-interface.  The screen is split into 4 sections, one for each of the lights.  In each section there are controls for RGB, RGBW, W, or brightness as appropriate to that type of light.  The "TAB" key switches focus between the sections, while arrow keys move between the input controls.  Up and Down arrow keys change the values by small amounts, while holding shift with up and down changes the values in large amounts.
 
-## Web
+Web
+---
 
 One of the user-interfaces is a web interface, which runs in a spawned go func().  The web interfaces is composed of 2 separate parts:
 
@@ -69,7 +75,8 @@ One of the user-interfaces is a web interface, which runs in a spawned go func()
 ./office_lights tui web
 ```
 
-## Streamdeck
+Streamdeck
+----------
 
 One of the user-interfaces is a Streamdeck+, which has:
 * 8 buttons arranged into 2 rows of 4.  Each button has a configurable image behind it, of size 120x120 pixels.
@@ -101,20 +108,3 @@ The UI on the streamdeck should work like this:
 ```bash
 ./office_lights tui web streamdeck
 ```
-
-### Stream Deck+ Features
-
-The implementation uses `rafaelmartins.com/p/streamdeck` which provides full Stream Deck+ support:
-
-- ✅ **Buttons (8 total)**: Display custom images and detect presses
-- ✅ **Touchscreen (800×100)**: Display real-time light values in 4 sections
-- ✅ **Rotary Encoders (4 dials)**: Adjust values (rotation) and toggle on/off (press)
-
-**Controls:**
-- **Top 4 buttons**: Mode selection (LED Strip, LED Bar RGBW, LED Bar White, Video Lights)
-- **Touchscreen**: Shows current values for the selected mode (updates every 100ms)
-- **4 Dials**:
-  - Rotate: Adjust values by ±5 per tick
-  - Press: Toggle between 0 and last value (or on/off for video lights)
-- **Bottom 4 buttons**: Reserved for future use (presets, quick actions, etc.)
-
