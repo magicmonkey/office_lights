@@ -18,31 +18,27 @@ import (
 )
 
 func main() {
-	// Check if TUI mode is requested early to suppress logs
+	// Check which UIs are requested from command line arguments
 	useTUI := false
-	if len(os.Args) > 1 && os.Args[1] == "tui" {
-		useTUI = true
+	useWeb := false
+	useStreamDeck := false
+	for _, arg := range os.Args[1:] {
+		switch arg {
+		case "tui":
+			useTUI = true
+		case "web":
+			useWeb = true
+		case "streamdeck":
+			useStreamDeck = true
+		}
 	}
+
+	// Also check environment variables
 	if os.Getenv("TUI") != "" {
 		useTUI = true
 	}
-
-	// Check if web mode is requested
-	useWeb := false
-	if len(os.Args) > 1 && os.Args[1] == "web" {
-		useWeb = true
-	}
 	if os.Getenv("WEB") != "" {
 		useWeb = true
-	}
-
-	// Check if Stream Deck mode is requested
-	useStreamDeck := false
-	for _, arg := range os.Args[1:] {
-		if arg == "streamdeck" {
-			useStreamDeck = true
-			break
-		}
 	}
 	if os.Getenv("STREAMDECK") != "" {
 		useStreamDeck = true
