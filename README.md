@@ -69,3 +69,26 @@ One of the user-interfaces is a web interface, which runs in a spawned go func()
 ./office_lights tui web
 ```
 
+## Streamdeck
+
+One of the user-interfaces is a Streamdeck+, which has:
+* 8 buttons arranged into 2 rows of 4.  Each button has a configurable image behind it, of size 120x120 pixels.
+* A long thin touchscreen, size 800x100, which can sense taps but nothing else.
+* 4 physical rotary encoders, with detents so there are defined up or down actions, and they can also be pressed (or clicked).
+
+The UI on the streamdeck should work like this:
+
+* The first 3 buttons on the top row should act like a radio button set, selecting between:
+  1. The LED strip
+  2. The LED bar's RGBW lights
+  3. The LED bar's plain white lights
+  4. The video lights
+
+* The touchscreen should be split into 4 areas, and show something different depending on which "radio button" from the top row of buttons is chosen:
+  * For the LED strip, show 3 things: red, green, and blue
+  * For the LED bar's RGBW lights, show 4 things: red, green, blue, and white
+  * For the LED bar's plain white lights, show 2 things: the brightness of the plain white lights in the first section of 13 lights, and the brightness of the plain white lights in the second section of 13 lights.
+  * For the video lights, show 2 things: the brightness of the first video light, and the brightness of the second video light.
+
+* The 4 dials should allow the values shown on the touchscreen to be increased or decreased as the dial is turned.  Clicking the dials will either toggle the value between "0" and the last-used value, or in the case of the video lights it will toggle the on/off state.
+
