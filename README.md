@@ -85,7 +85,7 @@ One of the user-interfaces is a Streamdeck+, which has:
 
 The UI on the streamdeck should work like this:
 
-* The first 3 buttons on the top row should act like a radio button set, selecting between:
+* The buttons on the top row should act like a radio button set, selecting between:
   1. The LED strip
   2. The LED bar's RGBW lights
   3. The LED bar's plain white lights
