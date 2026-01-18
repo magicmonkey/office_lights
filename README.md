@@ -90,7 +90,7 @@ The UI on the streamdeck should work like this:
   * For the LED bar's plain white lights, show 2 things: the brightness of the plain white lights in the first section of 13 lights, and the brightness of the plain white lights in the second section of 13 lights.
   * For the video lights, show 2 things: the brightness of the first video light, and the brightness of the second video light.
 
-* The 4 dials should allow the values shown on the touchscreen to be increased or decreased as the dial is turned.  Clicking the dials will either toggle the value between "0" and the last-used value, or in the case of the video lights it will toggle the on/off state.
+* The 4 dials should allow the values shown on the touchscreen to be increased or decreased as the dial is turned, in increments of 5.  Clicking the dials will either toggle the value between "0" and the last-used value, or in the case of the video lights it will toggle the on/off state.  The other two dials will increase or decrease the 2 video lights in increments of 1.
 
 **Run Stream Deck Interface:**
 ```bash
