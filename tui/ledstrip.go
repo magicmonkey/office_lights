@@ -36,6 +36,11 @@ func (m *ledStripModel) prevControl() {
 	m.activeControl = (m.activeControl - 1 + 3) % 3
 }
 
+// refresh updates the model's values from the driver
+func (m *ledStripModel) refresh() {
+	m.r, m.g, m.b = m.driver.GetColor()
+}
+
 func (m *ledStripModel) adjustValue(delta int) tea.Cmd {
 	switch m.activeControl {
 	case 0: // Red

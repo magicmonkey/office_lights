@@ -68,6 +68,21 @@ func (m *ledBarModel) prevControl() {
 	}
 }
 
+// refresh updates the model's values from the driver
+func (m *ledBarModel) refresh() {
+	// Refresh RGBW values for current selection
+	r, g, b, w, err := m.driver.GetRGBW(m.section, m.rgbwIndex)
+	if err == nil {
+		m.r, m.g, m.b, m.w = r, g, b, w
+	}
+
+	// Refresh white brightness for current selection
+	brightness, err := m.driver.GetWhite(m.section, m.whiteIndex)
+	if err == nil {
+		m.whiteBrightness = brightness
+	}
+}
+
 func (m *ledBarModel) adjustValue(delta int) tea.Cmd {
 	if m.mode == 0 { // RGBW mode
 		switch m.activeControl {

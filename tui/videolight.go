@@ -37,6 +37,11 @@ func (m *videoLightModel) prevControl() {
 	m.activeControl = (m.activeControl - 1 + 2) % 2
 }
 
+// refresh updates the model's values from the driver
+func (m *videoLightModel) refresh() {
+	m.on, m.brightness = m.driver.GetState()
+}
+
 func (m *videoLightModel) adjustValue(delta int) tea.Cmd {
 	if m.activeControl == 0 {
 		// On/off toggle - ignore delta for this control

@@ -64,7 +64,8 @@ func New(
 
 // Init initializes the model (Bubbletea requirement)
 func (m Model) Init() tea.Cmd {
-	return nil
+	// Start the periodic refresh tick
+	return tick()
 }
 
 func clamp(val, min, max int) int {

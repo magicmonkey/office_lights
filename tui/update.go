@@ -66,6 +66,15 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case publishErrorMsg:
 		m.err = msg.err
 		return m, nil
+
+	case tickMsg:
+		// Refresh all values from drivers
+		m.ledStrip.refresh()
+		m.ledBar.refresh()
+		m.videoLight1.refresh()
+		m.videoLight2.refresh()
+		// Continue the tick cycle
+		return m, tick()
 	}
 
 	return m, nil
