@@ -175,6 +175,41 @@ Step-by-step guide for implementing the web interface.
 
 ---
 
+### Stream Deck+ Interface (To Do 📋)
+
+#### 17. [Stream Deck Architecture](17-streamdeck-architecture.md)
+Stream Deck+ hardware interface design.
+- **Status:** 📋 Not started
+- **Complexity:** High
+
+**What it covers:**
+- Stream Deck+ hardware overview (buttons, touchscreen, dials)
+- 4 operational modes (LED Strip, LED Bar RGBW, LED Bar White, Video Lights)
+- Mode selection via buttons
+- Touchscreen display layout (800×100, 4 sections)
+- Rotary encoder controls (rotation and click)
+- Direct USB HID communication
+- Image rendering pipeline
+- Event handling architecture
+
+#### 18. [Stream Deck Implementation Plan](18-streamdeck-implementation-plan.md)
+Step-by-step guide for implementing the Stream Deck interface.
+- **Status:** 📋 Not started
+- **Complexity:** High
+
+**What it covers:**
+- 10 implementation phases
+- Device detection and initialization
+- Button and touchscreen rendering
+- Mode-specific section data
+- Event handling (buttons, dials, touch)
+- Integration with existing drivers
+- Linux udev rules
+- Testing strategy
+- Troubleshooting guide
+
+---
+
 ### Future Enhancements (🔮)
 
 #### 08. [UI Integration](08-future-ui-integration.md)
@@ -183,10 +218,10 @@ Additional user interface options.
 - **Complexity:** High
 
 **What it covers:**
-- Stream Deck integration
 - Scene presets
 - WebSocket support (real-time updates)
 - Animations and effects
+- Advanced Stream Deck features
 
 ---
 
@@ -217,7 +252,11 @@ Additional user interface options.
 - [x] Web interface architecture (spec 15)
 - [x] Web interface implementation (spec 16)
 
-### Phase 7: Future 🔮
+### Phase 7: Stream Deck+ Interface 📋
+- [ ] Stream Deck architecture (spec 17)
+- [ ] Stream Deck implementation (spec 18)
+
+### Phase 8: Future 🔮
 - [ ] Additional UI integration (spec 08)
 
 ---
@@ -278,6 +317,37 @@ If you're ready to implement the web user interface, follow this sequence:
 
 ---
 
+## Getting Started with Stream Deck+
+
+If you're ready to implement the Stream Deck+ interface, follow this sequence:
+
+1. **Read the architecture:** Start with [17-streamdeck-architecture.md](17-streamdeck-architecture.md)
+2. **Follow the implementation plan:** Use [18-streamdeck-implementation-plan.md](18-streamdeck-implementation-plan.md)
+3. **Test incrementally:** Build and test each phase as you go
+
+### Quick Implementation Checklist
+
+- [ ] Install Stream Deck library: `go get github.com/muesli/streamdeck`
+- [ ] Install image libraries: `go get golang.org/x/image/...`
+- [ ] Create `streamdeck/` package structure with `icons/` subdirectory
+- [ ] Define Mode enum and StreamDeckUI struct
+- [ ] Implement device detection and initialization
+- [ ] Create button rendering (120×120 pixels)
+- [ ] Create touchscreen rendering (800×100 pixels)
+- [ ] Implement mode-specific section data
+- [ ] Add button press event handling
+- [ ] Add dial rotation event handling
+- [ ] Add dial click event handling
+- [ ] Implement periodic touchscreen updates
+- [ ] Integrate with main.go (Stream Deck mode)
+- [ ] Create button icons (PNG files)
+- [ ] Set up Linux udev rules (if applicable)
+- [ ] Test with real hardware
+- [ ] Verify concurrent operation with TUI and Web
+- [ ] Verify MQTT publishing and database saves
+
+---
+
 ## Project Structure
 
 ```
@@ -307,7 +377,7 @@ office_lights/
 │   ├── videolight.go
 │   ├── styles.go
 │   └── messages.go
-├── web/                     # Web user interface (to be created)
+├── web/                     # Web user interface
 │   ├── web.go
 │   ├── api.go
 │   ├── state.go
@@ -316,6 +386,19 @@ office_lights/
 │   │   ├── style.css
 │   │   └── app.js
 │   └── web_test.go
+├── streamdeck/              # Stream Deck+ interface (to be created)
+│   ├── streamdeck.go
+│   ├── model.go
+│   ├── render.go
+│   ├── events.go
+│   ├── modes.go
+│   ├── icons/
+│   │   ├── ledstrip.png
+│   │   ├── ledbar_rgbw.png
+│   │   ├── ledbar_white.png
+│   │   └── videolight.png
+│   └── fonts/
+│       └── Roboto-Regular.ttf
 ├── spec/                    # This directory
 │   └── *.md
 └── lights.sqlite3          # State database (created at runtime)

@@ -85,12 +85,31 @@ See **spec/11-state-storage-implementation-order.md** for detailed implementatio
     - Implement JavaScript logic with polling
     - Integrate with main application
 
-## Phase 8: Future Enhancements
-14. **Additional UI Integration** (spec/08-future-ui-integration.md)
-    - Stream Deck integration
+## Phase 8: Stream Deck+ Interface
+14. **Stream Deck Architecture** (spec/17-streamdeck-architecture.md)
+    - Design Stream Deck+ hardware interface
+    - Define 4 operational modes
+    - Plan button, touchscreen, and dial controls
+    - Choose USB HID library (github.com/muesli/streamdeck)
+    - Design image rendering pipeline
+    - Plan event handling architecture
+
+15. **Stream Deck Implementation** (spec/18-streamdeck-implementation-plan.md)
+    - Install dependencies (streamdeck library, image libraries)
+    - Implement device detection and initialization
+    - Create button rendering (120×120 pixels)
+    - Create touchscreen rendering (800×100 pixels)
+    - Implement mode-specific section data
+    - Add button, dial, and touch event handling
+    - Integrate with main application
+    - Set up Linux udev rules (if applicable)
+
+## Phase 9: Future Enhancements
+16. **Additional UI Integration** (spec/08-future-ui-integration.md)
     - Add presets and scenes
     - WebSocket support for real-time updates
     - Animations and effects
+    - Advanced Stream Deck features
 
 ## Development Tips
 
@@ -121,7 +140,7 @@ Before moving to the next phase, ensure:
 ## Estimated Complexity
 - **Low Complexity:** Project setup, MQTT infrastructure, LED strip, video light, storage schema
 - **Medium Complexity:** Main orchestration, testing, state storage operations, driver integration, TUI components (LED strip, video light), web backend (API, server)
-- **High Complexity:** LED bar (due to complex message format), LED bar state storage, TUI LED bar component, web frontend (JavaScript, state management), future Stream Deck integration
+- **High Complexity:** LED bar (due to complex message format), LED bar state storage, TUI LED bar component, web frontend (JavaScript, state management), Stream Deck+ interface (USB HID communication, image rendering, event handling)
 
 ## Dependencies
 - Each driver depends on MQTT infrastructure
@@ -133,5 +152,8 @@ Before moving to the next phase, ensure:
 - TUI depends on main orchestration and state storage being complete
 - Web interface depends on drivers having getter methods for current state
 - Web interface depends on main orchestration and state storage being complete
-- Web and TUI can be developed independently (parallel development possible)
-- Future UI integration depends on main orchestration and state storage being complete
+- Stream Deck interface depends on drivers having getter methods for current state
+- Stream Deck interface depends on main orchestration and state storage being complete
+- Web, TUI, and Stream Deck can be developed independently (parallel development possible)
+- Stream Deck requires additional libraries (github.com/muesli/streamdeck, golang.org/x/image/...)
+- Stream Deck requires hardware for full testing (can develop with mocks initially)

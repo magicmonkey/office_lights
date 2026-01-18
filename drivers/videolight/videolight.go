@@ -85,6 +85,16 @@ func (v *VideoLight) GetState() (bool, int) {
 	return v.on, v.brightness
 }
 
+// IsOn returns whether the light is currently on
+func (v *VideoLight) IsOn() bool {
+	return v.on
+}
+
+// Brightness returns the current brightness value
+func (v *VideoLight) Brightness() int {
+	return v.brightness
+}
+
 // GetLightID returns the light ID
 func (v *VideoLight) GetLightID() int {
 	return v.lightID

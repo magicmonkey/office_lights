@@ -260,20 +260,59 @@ func (l *LEDBar) SetAllRGBW(r, g, b, w int) error {
 	return l.Publish()
 }
 
-// SetAllWhite sets all white LEDs to the same value
-func (l *LEDBar) SetAllWhite(value int) error {
+// SetAllWhite sets all white LEDs in a specific section to the same value
+// section: 1 or 2
+// value: 0-255
+func (l *LEDBar) SetAllWhite(section int, value int) error {
+	if section != 1 && section != 2 {
+		return fmt.Errorf("section must be 1 or 2, got %d", section)
+	}
+
 	if err := validateValue(value); err != nil {
 		return fmt.Errorf("value: %w", err)
 	}
 
-	for i := range l.white1 {
-		l.white1[i] = value
-	}
-	for i := range l.white2 {
-		l.white2[i] = value
+	if section == 1 {
+		for i := range l.white1 {
+			l.white1[i] = value
+		}
+	} else {
+		for i := range l.white2 {
+			l.white2[i] = value
+		}
 	}
 
 	return l.Publish()
+}
+
+// GetAverageWhite returns the average value of all white LEDs in a specific section
+// section: 1 or 2
+// returns: average value (0-255)
+func (l *LEDBar) GetAverageWhite(section int) int {
+	if section != 1 && section != 2 {
+		return 0
+	}
+
+	var sum int
+	var count int
+
+	if section == 1 {
+		for _, v := range l.white1 {
+			sum += v
+		}
+		count = len(l.white1)
+	} else {
+		for _, v := range l.white2 {
+			sum += v
+		}
+		count = len(l.white2)
+	}
+
+	if count == 0 {
+		return 0
+	}
+
+	return sum / count
 }
 
 // Publish formats and publishes the current state to MQTT

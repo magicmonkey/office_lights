@@ -356,25 +356,44 @@ func TestSetAllWhite(t *testing.T) {
 	mock := mqtt.NewMockPublisher()
 	bar, _ := NewLEDBar(0, mock, "test/topic")
 
-	err := bar.SetAllWhite(150)
+	// Set all white LEDs in section 1
+	err := bar.SetAllWhite(1, 150)
 	if err != nil {
-		t.Fatalf("SetAllWhite failed: %v", err)
+		t.Fatalf("SetAllWhite(1, 150) failed: %v", err)
 	}
 
-	// Verify all white LEDs have the same value
-	for section := 1; section <= 2; section++ {
-		for i := 0; i < 13; i++ {
-			val, _ := bar.GetWhite(section, i)
-			if val != 150 {
-				t.Errorf("Section %d White[%d] incorrect, got %d", section, i, val)
-			}
+	// Set all white LEDs in section 2
+	err = bar.SetAllWhite(2, 200)
+	if err != nil {
+		t.Fatalf("SetAllWhite(2, 200) failed: %v", err)
+	}
+
+	// Verify section 1 white LEDs
+	for i := 0; i < 13; i++ {
+		val, _ := bar.GetWhite(1, i)
+		if val != 150 {
+			t.Errorf("Section 1 White[%d] incorrect, got %d, expected 150", i, val)
+		}
+	}
+
+	// Verify section 2 white LEDs
+	for i := 0; i < 13; i++ {
+		val, _ := bar.GetWhite(2, i)
+		if val != 200 {
+			t.Errorf("Section 2 White[%d] incorrect, got %d, expected 200", i, val)
 		}
 	}
 
 	// Test invalid value
-	err = bar.SetAllWhite(256)
+	err = bar.SetAllWhite(1, 256)
 	if err == nil {
 		t.Error("Expected error for invalid value")
+	}
+
+	// Test invalid section
+	err = bar.SetAllWhite(3, 100)
+	if err == nil {
+		t.Error("Expected error for invalid section")
 	}
 }
 

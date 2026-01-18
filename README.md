@@ -92,3 +92,27 @@ The UI on the streamdeck should work like this:
 
 * The 4 dials should allow the values shown on the touchscreen to be increased or decreased as the dial is turned.  Clicking the dials will either toggle the value between "0" and the last-used value, or in the case of the video lights it will toggle the on/off state.
 
+**Run Stream Deck Interface:**
+```bash
+./office_lights streamdeck
+```
+
+**Run all UIs simultaneously:**
+```bash
+./office_lights tui web streamdeck
+```
+
+### Current Limitations
+
+The current implementation uses the `github.com/muesli/streamdeck` library, which supports the standard Stream Deck but has limited support for Stream Deck+ features:
+
+- ✅ **Buttons (8 total)**: Fully functional - can display custom images and detect presses
+- ❌ **Touchscreen**: Not supported by the library (rendering code is ready but cannot display)
+- ❌ **Rotary Encoders (Dials)**: Not supported by the library (event handling code is ready but inactive)
+
+**Button-Only Mode:**
+- Top 4 buttons: Mode selection (LED Strip, LED Bar RGBW, LED Bar White, Video Lights)
+- Bottom 4 buttons: Reserved for future use (presets, quick actions, etc.)
+
+To use the full Stream Deck+ features (touchscreen and dials), a different USB HID library with Stream Deck+ support would be needed. The code architecture is prepared for this - only the device communication layer needs to be swapped out.
+

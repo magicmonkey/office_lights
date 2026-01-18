@@ -76,6 +76,21 @@ func (l *LEDStrip) GetColor() (int, int, int) {
 	return l.r, l.g, l.b
 }
 
+// R returns the current red value
+func (l *LEDStrip) R() int {
+	return l.r
+}
+
+// G returns the current green value
+func (l *LEDStrip) G() int {
+	return l.g
+}
+
+// B returns the current blue value
+func (l *LEDStrip) B() int {
+	return l.b
+}
+
 // TurnOff turns off the LED strip by setting all colors to 0
 func (l *LEDStrip) TurnOff() error {
 	return l.SetColor(0, 0, 0)

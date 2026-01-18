@@ -12,6 +12,7 @@ import (
 	"github.com/kevin/office_lights/drivers/videolight"
 	officemqtt "github.com/kevin/office_lights/mqtt"
 	"github.com/kevin/office_lights/storage"
+	"github.com/kevin/office_lights/streamdeck"
 	"github.com/kevin/office_lights/tui"
 	"github.com/kevin/office_lights/web"
 )
@@ -33,6 +34,18 @@ func main() {
 	}
 	if os.Getenv("WEB") != "" {
 		useWeb = true
+	}
+
+	// Check if Stream Deck mode is requested
+	useStreamDeck := false
+	for _, arg := range os.Args[1:] {
+		if arg == "streamdeck" {
+			useStreamDeck = true
+			break
+		}
+	}
+	if os.Getenv("STREAMDECK") != "" {
+		useStreamDeck = true
 	}
 
 	// Disable logging if TUI mode is active (web mode still shows logs)
@@ -223,8 +236,32 @@ func main() {
 		log.Printf("Web interface available at http://localhost:%s", port)
 	}
 
+	// Start Stream Deck interface in a goroutine if requested
+	if useStreamDeck {
+		// Create Stream Deck UI
+		streamDeckUI, err := streamdeck.NewStreamDeckUI(ledStrip, ledBar, videoLight1, videoLight2)
+		if err != nil {
+			log.Printf("Warning: Failed to initialize Stream Deck: %v", err)
+			log.Println("Continuing without Stream Deck interface...")
+		} else {
+			// Start Stream Deck in a goroutine
+			go func() {
+				log.Println("Starting Stream Deck interface...")
+				if err := streamDeckUI.Run(); err != nil {
+					log.Printf("Stream Deck error: %v", err)
+				}
+				log.Println("Stream Deck exited")
+			}()
+
+			// Ensure Stream Deck is cleaned up on shutdown
+			defer streamDeckUI.Close()
+
+			log.Println("Stream Deck interface active")
+		}
+	}
+
 	// If no UI is requested, just note that we're running in headless mode
-	if !useTUI && !useWeb {
+	if !useTUI && !useWeb && !useStreamDeck {
 		log.Println("Running in headless mode (no UI). Press Ctrl+C to exit.")
 	}
 
