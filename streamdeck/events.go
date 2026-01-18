@@ -304,40 +304,54 @@ func (s *StreamDeckUI) toggleLEDBarWhite(dialIndex int) {
 
 func (s *StreamDeckUI) adjustVideoLights(dialIndex int, increment int) {
 	switch dialIndex {
-	case 0: // Video Light 1
-		on := s.videoLight1.IsOn()
-		if !on && increment > 0 {
-			// Light is off and dial turning up: turn on at brightness 0, then nudge up
-			brightness := clamp100(increment)
-			if err := s.videoLight1.TurnOn(brightness); err != nil {
-				log.Printf("Error turning on video light 1: %v", err)
-			}
-		} else if on {
-			brightness := clamp100(s.videoLight1.Brightness() + increment)
-			if err := s.videoLight1.TurnOn(brightness); err != nil {
-				log.Printf("Error setting video light 1 brightness: %v", err)
-			}
+	case 0: // Video Light 1 (coarse adjustment)
+		s.adjustVideoLight1(increment)
+	case 1: // Video Light 2 (coarse adjustment)
+		s.adjustVideoLight2(increment)
+	case 2: // Video Light 1 (fine-tune, increment of 1 per tick)
+		fineIncrement := increment / dialIncrement // Convert back to ticks for ±1 adjustment
+		s.adjustVideoLight1(fineIncrement)
+	case 3: // Video Light 2 (fine-tune, increment of 1 per tick)
+		fineIncrement := increment / dialIncrement // Convert back to ticks for ±1 adjustment
+		s.adjustVideoLight2(fineIncrement)
+	}
+}
+
+func (s *StreamDeckUI) adjustVideoLight1(increment int) {
+	on := s.videoLight1.IsOn()
+	if !on && increment > 0 {
+		// Light is off and dial turning up: turn on at brightness 0, then nudge up
+		brightness := clamp100(increment)
+		if err := s.videoLight1.TurnOn(brightness); err != nil {
+			log.Printf("Error turning on video light 1: %v", err)
 		}
-	case 1: // Video Light 2
-		on := s.videoLight2.IsOn()
-		if !on && increment > 0 {
-			// Light is off and dial turning up: turn on at brightness 0, then nudge up
-			brightness := clamp100(increment)
-			if err := s.videoLight2.TurnOn(brightness); err != nil {
-				log.Printf("Error turning on video light 2: %v", err)
-			}
-		} else if on {
-			brightness := clamp100(s.videoLight2.Brightness() + increment)
-			if err := s.videoLight2.TurnOn(brightness); err != nil {
-				log.Printf("Error setting video light 2 brightness: %v", err)
-			}
+	} else if on {
+		brightness := clamp100(s.videoLight1.Brightness() + increment)
+		if err := s.videoLight1.TurnOn(brightness); err != nil {
+			log.Printf("Error setting video light 1 brightness: %v", err)
+		}
+	}
+}
+
+func (s *StreamDeckUI) adjustVideoLight2(increment int) {
+	on := s.videoLight2.IsOn()
+	if !on && increment > 0 {
+		// Light is off and dial turning up: turn on at brightness 0, then nudge up
+		brightness := clamp100(increment)
+		if err := s.videoLight2.TurnOn(brightness); err != nil {
+			log.Printf("Error turning on video light 2: %v", err)
+		}
+	} else if on {
+		brightness := clamp100(s.videoLight2.Brightness() + increment)
+		if err := s.videoLight2.TurnOn(brightness); err != nil {
+			log.Printf("Error setting video light 2 brightness: %v", err)
 		}
 	}
 }
 
 func (s *StreamDeckUI) toggleVideoLights(dialIndex int) {
 	switch dialIndex {
-	case 0: // Video Light 1
+	case 0, 2: // Video Light 1 (dial 0 = coarse, dial 2 = fine-tune)
 		if s.videoLight1.IsOn() {
 			if err := s.videoLight1.TurnOff(); err != nil {
 				log.Printf("Error turning off video light 1: %v", err)
@@ -351,7 +365,7 @@ func (s *StreamDeckUI) toggleVideoLights(dialIndex int) {
 				log.Printf("Error turning on video light 1: %v", err)
 			}
 		}
-	case 1: // Video Light 2
+	case 1, 3: // Video Light 2 (dial 1 = coarse, dial 3 = fine-tune)
 		if s.videoLight2.IsOn() {
 			if err := s.videoLight2.TurnOff(); err != nil {
 				log.Printf("Error turning off video light 2: %v", err)

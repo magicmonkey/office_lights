@@ -63,7 +63,8 @@ func (s *StreamDeckUI) getLEDBarWhiteSections() [4]SectionData {
 	}
 }
 
-// getVideoLightsSections returns section data for Video Lights mode (2 active sections)
+// getVideoLightsSections returns section data for Video Lights mode (4 active sections)
+// Dials 0 and 1 are coarse adjustments (±5), dials 2 and 3 are fine-tune (±1)
 func (s *StreamDeckUI) getVideoLightsSections() [4]SectionData {
 	on1, brightness1 := s.videoLight1.IsOn(), s.videoLight1.Brightness()
 	on2, brightness2 := s.videoLight2.IsOn(), s.videoLight2.Brightness()
@@ -78,10 +79,20 @@ func (s *StreamDeckUI) getVideoLightsSections() [4]SectionData {
 		label2 = "Light 2 (OFF)"
 	}
 
+	fineTuneLabel1 := "L1 Fine"
+	if !on1 {
+		fineTuneLabel1 = "L1 Fine (OFF)"
+	}
+
+	fineTuneLabel2 := "L2 Fine"
+	if !on2 {
+		fineTuneLabel2 = "L2 Fine (OFF)"
+	}
+
 	return [4]SectionData{
 		{Label: label1, Value: brightness1, Active: true},
 		{Label: label2, Value: brightness2, Active: true},
-		{Label: "", Value: 0, Active: false},
-		{Label: "", Value: 0, Active: false},
+		{Label: fineTuneLabel1, Value: brightness1, Active: true},
+		{Label: fineTuneLabel2, Value: brightness2, Active: true},
 	}
 }
