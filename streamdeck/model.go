@@ -7,7 +7,7 @@ import (
 	"github.com/kevin/office_lights/drivers/ledbar"
 	"github.com/kevin/office_lights/drivers/ledstrip"
 	"github.com/kevin/office_lights/drivers/videolight"
-	sdlib "github.com/muesli/streamdeck"
+	sdlib "rafaelmartins.com/p/streamdeck"
 )
 
 // Mode represents the current operational mode of the Stream Deck interface
@@ -70,8 +70,8 @@ func NewStreamDeckUI(
 	videoLight1 *videolight.VideoLight,
 	videoLight2 *videolight.VideoLight,
 ) (*StreamDeckUI, error) {
-	// Find Stream Deck device
-	devices, err := sdlib.Devices()
+	// Find Stream Deck devices
+	devices, err := sdlib.Enumerate()
 	if err != nil {
 		return nil, err
 	}
@@ -81,7 +81,12 @@ func NewStreamDeckUI(
 	}
 
 	// Use the first device found
-	device := &devices[0]
+	device := devices[0]
+
+	// Open the device
+	if err := device.Open(); err != nil {
+		return nil, err
+	}
 
 	ui := &StreamDeckUI{
 		device:      device,

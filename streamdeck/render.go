@@ -5,12 +5,14 @@ import (
 	"image/color"
 	"image/draw"
 	"image/png"
+	"log"
 	"os"
 	"path/filepath"
 
 	"golang.org/x/image/font"
 	"golang.org/x/image/font/basicfont"
 	"golang.org/x/image/math/fixed"
+	sdlib "rafaelmartins.com/p/streamdeck"
 )
 
 const (
@@ -23,13 +25,20 @@ const (
 
 // updateButtons renders and updates all button images
 func (s *StreamDeckUI) updateButtons() error {
-	for i := 0; i < 8; i++ {
+	keyIDs := []sdlib.KeyID{
+		sdlib.KEY_1, sdlib.KEY_2, sdlib.KEY_3, sdlib.KEY_4,
+		sdlib.KEY_5, sdlib.KEY_6, sdlib.KEY_7, sdlib.KEY_8,
+	}
+
+	for i, keyID := range keyIDs {
 		img, err := s.renderButton(i)
 		if err != nil {
 			return err
 		}
-		if err := s.device.SetImage(uint8(i), img); err != nil {
-			return err
+		if err := s.device.SetKeyImage(keyID, img); err != nil {
+			log.Printf("Warning: Failed to set key %d image: %v", i+1, err)
+			// Continue even if one button fails
+			continue
 		}
 		s.buttonImages[i] = img
 	}
@@ -115,12 +124,20 @@ func (s *StreamDeckUI) getModeIconFilename(mode Mode) string {
 }
 
 // updateTouchscreen renders and updates the touchscreen display
-// Note: The github.com/muesli/streamdeck library does not support the Stream Deck+ touchscreen.
-// This method is kept for future implementation with a compatible library.
 func (s *StreamDeckUI) updateTouchscreen() error {
-	// TODO: Implement touchscreen support when a compatible library is available
-	// For now, we just render the image but don't send it to the device
-	s.touchImage = s.renderTouchscreen()
+	// Check if device supports touchscreen
+	if !s.device.GetTouchStripSupported() {
+		// Device doesn't have a touch strip, skip
+		return nil
+	}
+
+	img := s.renderTouchscreen()
+	if err := s.device.SetTouchStripImage(img); err != nil {
+		// Log but don't fail - touchscreen might not be available
+		log.Printf("Warning: Failed to set touchscreen image: %v", err)
+		return nil
+	}
+	s.touchImage = img
 	return nil
 }
 

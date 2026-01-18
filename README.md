@@ -102,17 +102,19 @@ The UI on the streamdeck should work like this:
 ./office_lights tui web streamdeck
 ```
 
-### Current Limitations
+### Stream Deck+ Features
 
-The current implementation uses the `github.com/muesli/streamdeck` library, which supports the standard Stream Deck but has limited support for Stream Deck+ features:
+The implementation uses `rafaelmartins.com/p/streamdeck` which provides full Stream Deck+ support:
 
-- ✅ **Buttons (8 total)**: Fully functional - can display custom images and detect presses
-- ❌ **Touchscreen**: Not supported by the library (rendering code is ready but cannot display)
-- ❌ **Rotary Encoders (Dials)**: Not supported by the library (event handling code is ready but inactive)
+- ✅ **Buttons (8 total)**: Display custom images and detect presses
+- ✅ **Touchscreen (800×100)**: Display real-time light values in 4 sections
+- ✅ **Rotary Encoders (4 dials)**: Adjust values (rotation) and toggle on/off (press)
 
-**Button-Only Mode:**
-- Top 4 buttons: Mode selection (LED Strip, LED Bar RGBW, LED Bar White, Video Lights)
-- Bottom 4 buttons: Reserved for future use (presets, quick actions, etc.)
-
-To use the full Stream Deck+ features (touchscreen and dials), a different USB HID library with Stream Deck+ support would be needed. The code architecture is prepared for this - only the device communication layer needs to be swapped out.
+**Controls:**
+- **Top 4 buttons**: Mode selection (LED Strip, LED Bar RGBW, LED Bar White, Video Lights)
+- **Touchscreen**: Shows current values for the selected mode (updates every 100ms)
+- **4 Dials**:
+  - Rotate: Adjust values by ±5 per tick
+  - Press: Toggle between 0 and last value (or on/off for video lights)
+- **Bottom 4 buttons**: Reserved for future use (presets, quick actions, etc.)
 
