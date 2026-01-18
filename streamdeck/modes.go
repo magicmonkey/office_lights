@@ -23,10 +23,10 @@ func (s *StreamDeckUI) getLEDStripSections() [4]SectionData {
 	r, g, b := s.ledStrip.R(), s.ledStrip.G(), s.ledStrip.B()
 
 	return [4]SectionData{
-		{Label: "Red", Value: r, Active: true},
-		{Label: "Green", Value: g, Active: true},
-		{Label: "Blue", Value: b, Active: true},
-		{Label: "", Value: 0, Active: false},
+		{Label: "Red", Value: r, MaxValue: 255, Active: true},
+		{Label: "Green", Value: g, MaxValue: 255, Active: true},
+		{Label: "Blue", Value: b, MaxValue: 255, Active: true},
+		{Label: "", Value: 0, MaxValue: 255, Active: false},
 	}
 }
 
@@ -41,10 +41,10 @@ func (s *StreamDeckUI) getLEDBarRGBWSections() [4]SectionData {
 	}
 
 	return [4]SectionData{
-		{Label: "Red", Value: r, Active: true},
-		{Label: "Green", Value: g, Active: true},
-		{Label: "Blue", Value: b, Active: true},
-		{Label: "White", Value: w, Active: true},
+		{Label: "Red", Value: r, MaxValue: 255, Active: true},
+		{Label: "Green", Value: g, MaxValue: 255, Active: true},
+		{Label: "Blue", Value: b, MaxValue: 255, Active: true},
+		{Label: "White", Value: w, MaxValue: 255, Active: true},
 	}
 }
 
@@ -56,10 +56,10 @@ func (s *StreamDeckUI) getLEDBarWhiteSections() [4]SectionData {
 	section2Avg := s.ledBar.GetAverageWhite(2)
 
 	return [4]SectionData{
-		{Label: "Section 1", Value: section1Avg, Active: true},
-		{Label: "Section 2", Value: section2Avg, Active: true},
-		{Label: "", Value: 0, Active: false},
-		{Label: "", Value: 0, Active: false},
+		{Label: "Section 1", Value: section1Avg, MaxValue: 255, Active: true},
+		{Label: "Section 2", Value: section2Avg, MaxValue: 255, Active: true},
+		{Label: "", Value: 0, MaxValue: 255, Active: false},
+		{Label: "", Value: 0, MaxValue: 255, Active: false},
 	}
 }
 
@@ -90,9 +90,9 @@ func (s *StreamDeckUI) getVideoLightsSections() [4]SectionData {
 	}
 
 	return [4]SectionData{
-		{Label: label1, Value: brightness1, Active: true},
-		{Label: label2, Value: brightness2, Active: true},
-		{Label: fineTuneLabel1, Value: brightness1, Active: true},
-		{Label: fineTuneLabel2, Value: brightness2, Active: true},
+		{Label: label1, Value: brightness1, MaxValue: 100, Active: true},
+		{Label: label2, Value: brightness2, MaxValue: 100, Active: true},
+		{Label: fineTuneLabel1, Value: brightness1, MaxValue: 100, Active: true},
+		{Label: fineTuneLabel2, Value: brightness2, MaxValue: 100, Active: true},
 	}
 }

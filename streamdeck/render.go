@@ -192,17 +192,20 @@ func (s *StreamDeckUI) renderSection(img *image.RGBA, index int, data SectionDat
 	barHeight := 10
 	barWidth := sectionWidth - 20
 	barX := x + 10
-	s.drawProgressBar(img, barX, barY, barWidth, barHeight, data.Value)
+	s.drawProgressBar(img, barX, barY, barWidth, barHeight, data.Value, data.MaxValue)
 }
 
 // drawProgressBar draws a horizontal progress bar
-func (s *StreamDeckUI) drawProgressBar(img *image.RGBA, x, y, width, height, value int) {
+func (s *StreamDeckUI) drawProgressBar(img *image.RGBA, x, y, width, height, value, maxValue int) {
 	// Background
 	bgRect := image.Rect(x, y, x+width, y+height)
 	draw.Draw(img, bgRect, &image.Uniform{color.RGBA{60, 60, 60, 255}}, image.Point{x, y}, draw.Src)
 
-	// Fill
-	fillWidth := (value * width) / 255
+	// Fill (use maxValue for scaling, default to 255 if not set)
+	if maxValue <= 0 {
+		maxValue = 255
+	}
+	fillWidth := (value * width) / maxValue
 	if fillWidth > 0 {
 		fillRect := image.Rect(x, y, x+fillWidth, y+height)
 		fillColor := color.RGBA{100, 180, 255, 255}

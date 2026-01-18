@@ -38,9 +38,10 @@ func (m Mode) String() string {
 
 // SectionData represents data to display in one touchscreen section
 type SectionData struct {
-	Label string // e.g., "Red", "Green", "Light1"
-	Value int    // 0-255 or 0-100
-	Active bool  // Whether this section is active in the current mode
+	Label    string // e.g., "Red", "Green", "Light1"
+	Value    int    // Current value
+	MaxValue int    // Maximum value (255 for LEDs, 100 for video lights)
+	Active   bool   // Whether this section is active in the current mode
 }
 
 // StreamDeckUI manages the Stream Deck+ interface
