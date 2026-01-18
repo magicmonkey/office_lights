@@ -58,7 +58,7 @@ func main() {
 	// Get MQTT broker address from environment variable or use default
 	broker := os.Getenv("MQTT_BROKER")
 	if broker == "" {
-		broker = "tcp://localhost:1883"
+		broker = "tcp://10.1.0.1:1883"
 	}
 
 	// Get MQTT client ID from environment variable or use default
