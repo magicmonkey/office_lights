@@ -58,3 +58,14 @@ One of the user-interfaces is a web interface, which runs in a spawned go func()
 
 2. An HTML page which makes an AJAX request to get the status from the API and renders some HTML UI components, and whenever the user changes something it sends the status back to the POST API endpoint.
 
+**Run Web Interface:**
+```bash
+./office_lights web
+# Access at http://localhost:8080
+```
+
+**Run both UIs simultaneously:**
+```bash
+./office_lights tui web
+```
+

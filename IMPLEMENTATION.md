@@ -317,6 +317,23 @@ WEB_PORT=3000 ./office_lights web
 - Works on desktop and mobile browsers
 - Multiple browser windows can access simultaneously
 
+### Run Multiple UIs Simultaneously
+```bash
+# Run both TUI and web interface together
+./office_lights tui web
+
+# Or using environment variables
+export TUI=1
+export WEB=1
+./office_lights
+```
+
+**Notes:**
+- Both UIs run in separate goroutines
+- Changes in one UI are reflected in the other immediately
+- Both share the same driver instances and state
+- When TUI is active, logs are suppressed (affects both UIs)
+
 ### Run tests
 ```bash
 go test ./...
