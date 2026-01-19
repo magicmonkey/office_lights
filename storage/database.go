@@ -60,7 +60,23 @@ func (d *Database) InitSchema() error {
 		}
 	}
 
+	// Ensure scene slots exist (needed for foreign key constraints)
+	if err := d.ensureSceneSlots(); err != nil {
+		return fmt.Errorf("failed to ensure scene slots: %w", err)
+	}
+
 	log.Println("Storage: Schema initialized successfully")
+	return nil
+}
+
+// ensureSceneSlots ensures the 4 scene slots exist in the scenes table
+func (d *Database) ensureSceneSlots() error {
+	for i := 0; i < 4; i++ {
+		_, err := d.db.Exec("INSERT OR IGNORE INTO scenes (id) VALUES (?)", i)
+		if err != nil {
+			return fmt.Errorf("failed to create scene slot %d: %w", i, err)
+		}
+	}
 	return nil
 }
 
