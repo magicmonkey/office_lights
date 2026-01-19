@@ -24,11 +24,11 @@ This specification defines the architecture for a Stream Deck+ interface that pr
 
 ## Interface Design
 
-### Mode Selection (Top Row Buttons)
+### Mode Selection (Second Row Buttons)
 
-The first 4 buttons in the top row act as a radio button set:
+The 4 buttons in the second row act as a radio button set:
 
-| Button 1 | Button 2 | Button 3 | Button 4 |
+| Button 5 | Button 6 | Button 7 | Button 8 |
 |----------|----------|----------|----------|
 | LED Strip | LED Bar RGBW | LED Bar White | Video Lights |
 
@@ -176,8 +176,8 @@ type StreamDeckUI struct {
 ```go
 func (s *StreamDeckUI) handleButtonPress(buttonIndex int)
 ```
-- Buttons 0-3 (top row): Mode selection
-- Buttons 4-7 (bottom row): Reserved/unused
+- Buttons 0-3 (top row): Reserved for future functionality
+- Buttons 4-7 (second row): Mode selection
 
 **Dial Events:**
 ```go
@@ -285,7 +285,7 @@ s.videoLight1.TurnOff()
 
 ## Future Enhancements
 
-1. **Bottom Row Buttons (4-7):**
+1. **Top Row Buttons (0-3):**
    - Preset scenes
    - Quick toggles
    - Brightness presets

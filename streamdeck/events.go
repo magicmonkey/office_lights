@@ -10,24 +10,25 @@ const (
 func (s *StreamDeckUI) handleButtonPress(buttonIndex int) {
 	log.Printf("Button %d pressed", buttonIndex)
 
-	// Buttons 0-3 (top row): Mode selection
+	// Buttons 0-3 (top row): Reserved for future functionality
 	if buttonIndex < 4 {
-		newMode := Mode(buttonIndex)
-		if newMode != s.currentMode {
-			log.Printf("Switching mode from %s to %s", s.currentMode, newMode)
-			s.currentMode = newMode
-			// Update button display to reflect new mode
-			if err := s.updateButtons(); err != nil {
-				log.Printf("Error updating buttons: %v", err)
-			}
-			// Update touchscreen immediately to show new mode data
-			if err := s.updateTouchscreen(); err != nil {
-				log.Printf("Error updating touchscreen: %v", err)
-			}
-		}
+		return
 	}
 
-	// Buttons 4-7 (bottom row): Reserved/unused
+	// Buttons 4-7 (second row): Mode selection
+	newMode := Mode(buttonIndex - 4)
+	if newMode != s.currentMode {
+		log.Printf("Switching mode from %s to %s", s.currentMode, newMode)
+		s.currentMode = newMode
+		// Update button display to reflect new mode
+		if err := s.updateButtons(); err != nil {
+			log.Printf("Error updating buttons: %v", err)
+		}
+		// Update touchscreen immediately to show new mode data
+		if err := s.updateTouchscreen(); err != nil {
+			log.Printf("Error updating touchscreen: %v", err)
+		}
+	}
 }
 
 // handleDialRotate processes dial rotation events

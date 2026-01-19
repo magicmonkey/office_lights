@@ -266,19 +266,19 @@ func (s *StreamDeckUI) renderAll() error {
 
 // renderButtons renders all mode selection buttons
 func (s *StreamDeckUI) renderButtons() error {
-	modes := []Mode{ModeLEDStrip, ModeLEDBarRGBW, ModeLEDBarWhite, ModeVideoLights}
-
-	for i, mode := range modes {
-		img := s.createButtonImage(mode, mode == s.currentMode)
-		if err := s.setButtonImage(i, img); err != nil {
-			log.Printf("Failed to set button %d: %v", i, err)
-		}
-	}
-
-	// Clear remaining buttons
-	for i := 4; i < 8; i++ {
+	// Clear top row buttons (reserved for future functionality)
+	for i := 0; i < 4; i++ {
 		img := s.createEmptyButton()
 		s.setButtonImage(i, img)
+	}
+
+	// Render mode selection buttons on second row (4-7)
+	modes := []Mode{ModeLEDStrip, ModeLEDBarRGBW, ModeLEDBarWhite, ModeVideoLights}
+	for i, mode := range modes {
+		img := s.createButtonImage(mode, mode == s.currentMode)
+		if err := s.setButtonImage(i+4, img); err != nil {
+			log.Printf("Failed to set button %d: %v", i+4, err)
+		}
 	}
 
 	return nil
@@ -595,16 +595,19 @@ func (s *StreamDeckUI) handleButtonPress(btnIndex int) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	// Top row buttons (0-3) select mode
-	if btnIndex >= 0 && btnIndex <= 3 {
-		newMode := Mode(btnIndex)
-		if newMode != s.currentMode {
-			s.currentMode = newMode
-			log.Printf("Switched to mode: %s", newMode)
+	// Top row buttons (0-3): Reserved for future functionality
+	if btnIndex < 4 {
+		return
+	}
 
-			// Re-render buttons to show active state
-			go s.renderButtons()
-		}
+	// Second row buttons (4-7) select mode
+	newMode := Mode(btnIndex - 4)
+	if newMode != s.currentMode {
+		s.currentMode = newMode
+		log.Printf("Switched to mode: %s", newMode)
+
+		// Re-render buttons to show active state
+		go s.renderButtons()
 	}
 }
 
@@ -861,7 +864,8 @@ Requirements:
 - USB connection
 
 Controls:
-- Top row buttons: Select mode (LED Strip, LED Bar RGBW, LED Bar White, Video Lights)
+- Top row buttons: Reserved for future functionality
+- Second row buttons: Select mode (LED Strip, LED Bar RGBW, LED Bar White, Video Lights)
 - Touchscreen: View current values
 - Dials: Rotate to adjust values, click to toggle
 \`\`\`
@@ -893,10 +897,10 @@ Controls:
    - [ ] Device resets on startup
 
 2. **Mode Selection:**
-   - [ ] Button 0 selects LED Strip mode
-   - [ ] Button 1 selects LED Bar RGBW mode
-   - [ ] Button 2 selects LED Bar White mode
-   - [ ] Button 3 selects Video Lights mode
+   - [ ] Button 4 selects LED Strip mode
+   - [ ] Button 5 selects LED Bar RGBW mode
+   - [ ] Button 6 selects LED Bar White mode
+   - [ ] Button 7 selects Video Lights mode
    - [ ] Active button highlighted
 
 3. **Touchscreen Display:**

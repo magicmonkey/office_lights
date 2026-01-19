@@ -47,13 +47,13 @@ func (s *StreamDeckUI) updateButtons() error {
 
 // renderButton creates an image for a specific button
 func (s *StreamDeckUI) renderButton(index int) (image.Image, error) {
-	// Top row (0-3): Mode selection buttons
+	// Top row (0-3): Reserved for future functionality
 	if index < 4 {
-		return s.renderModeButton(index)
+		return s.renderBlankButton(), nil
 	}
 
-	// Bottom row (4-7): Reserved/unused
-	return s.renderBlankButton(), nil
+	// Second row (4-7): Mode selection buttons
+	return s.renderModeButton(index - 4)
 }
 
 // renderModeButton renders a mode selection button
