@@ -78,11 +78,11 @@ func TestSetRGBW(t *testing.T) {
 	bar, _ := NewLEDBar(0, mock, "test/topic")
 
 	tests := []struct {
-		name      string
-		section   int
-		index     int
+		name       string
+		section    int
+		index      int
 		r, g, b, w int
-		wantError bool
+		wantError  bool
 	}{
 		{"Valid section 1", 1, 0, 100, 150, 200, 50, false},
 		{"Valid section 2", 2, 5, 255, 0, 128, 200, false},
@@ -206,9 +206,9 @@ func TestMessageFormat(t *testing.T) {
 	payload := msg.Payload.(string)
 	values := strings.Split(payload, ",")
 
-	// Should have exactly 77 values
-	if len(values) != 77 {
-		t.Fatalf("Expected 77 values, got %d", len(values))
+	// Should have exactly 76 values
+	if len(values) != 76 {
+		t.Fatalf("Expected 76 values, got %d", len(values))
 	}
 
 	// Check first RGBW LED (section 1, index 0)
@@ -224,20 +224,20 @@ func TestMessageFormat(t *testing.T) {
 	}
 
 	// Check ignored values (positions 37-39)
-	if values[37] != "0" || values[38] != "0" || values[39] != "0" {
-		t.Errorf("Ignored values incorrect: got %s,%s,%s", values[37], values[38], values[39])
+	if values[37] != "0" || values[38] != "0" {
+		t.Errorf("Ignored values incorrect: got %s,%s", values[37], values[38])
 	}
 
 	// Check first RGBW LED in section 2 (index 0)
-	// Position 40-43: R,G,B,W = 60,70,80,90
-	if values[40] != "60" || values[41] != "70" || values[42] != "80" || values[43] != "90" {
-		t.Errorf("Section 2 first RGBW LED incorrect: got %s,%s,%s,%s", values[40], values[41], values[42], values[43])
+	// Position 39-42: R,G,B,W = 60,70,80,90
+	if values[39] != "60" || values[40] != "70" || values[41] != "80" || values[42] != "90" {
+		t.Errorf("Section 2 first RGBW LED incorrect: got %s,%s,%s,%s", values[39], values[40], values[41], values[42])
 	}
 
 	// Check first white LED in section 2 (index 0)
 	// Position 64: value = 100
-	if values[64] != "100" {
-		t.Errorf("Section 2 first white LED incorrect: expected 100, got %s", values[64])
+	if values[63] != "100" {
+		t.Errorf("Section 2 first white LED incorrect: expected 100, got %s", values[63])
 	}
 }
 

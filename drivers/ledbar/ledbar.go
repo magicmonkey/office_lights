@@ -339,9 +339,9 @@ func (l *LEDBar) Publish() error {
 // Message structure (77 values total):
 // - Values 0-23: 6 RGBW LEDs (4 values each: R,G,B,W)
 // - Values 24-36: 13 white LEDs (1 value each)
-// - Values 37-39: 3 ignored values (set to 0)
-// - Values 40-63: 6 RGBW LEDs (4 values each: R,G,B,W)
-// - Values 64-76: 13 white LEDs (1 value each)
+// - Values 37-38: 2 ignored values (set to 0)
+// - Values 39-62: 6 RGBW LEDs (4 values each: R,G,B,W)
+// - Values 63-75: 13 white LEDs (1 value each)
 func (l *LEDBar) formatMessage() string {
 	values := make([]string, 0, 77)
 
@@ -357,8 +357,8 @@ func (l *LEDBar) formatMessage() string {
 		values = append(values, strconv.Itoa(l.white1[i]))
 	}
 
-	// 3 ignored values
-	values = append(values, "0", "0", "0")
+	// 2 ignored values
+	values = append(values, "0", "0")
 
 	// Second section: 6 RGBW LEDs (24 values)
 	for i := 0; i < 6; i++ {
