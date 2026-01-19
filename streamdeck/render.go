@@ -192,10 +192,14 @@ func (s *StreamDeckUI) updateTouchscreen() error {
 // renderSceneButton renders a scene slot button
 func (s *StreamDeckUI) renderSceneButton(index int) (image.Image, error) {
 	exists, _ := s.storage.SceneExists(index)
-	label := fmt.Sprintf("Scene %d", index+1)
 
-	// Different styling for saved vs empty scenes
-	return s.renderTextButton(label, exists), nil
+	label := fmt.Sprintf("Scene %d", index+1)
+	if !exists {
+		label = fmt.Sprintf("(%d)", index+1)
+	}
+
+	// Scene buttons are never "active" - they just show the label
+	return s.renderTextButton(label, false), nil
 }
 
 // renderTouchscreen creates the full touchscreen image
