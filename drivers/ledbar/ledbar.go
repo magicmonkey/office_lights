@@ -388,6 +388,19 @@ func (l *LEDBar) GetBarID() int {
 	return l.barID
 }
 
+// GetChannels returns the current state as a 77-value array
+func (l *LEDBar) GetChannels() []int {
+	return l.getChannels()
+}
+
+// SetChannels sets all channel values from a 77-value array and publishes
+func (l *LEDBar) SetChannels(channels []int) error {
+	if err := l.loadFromChannels(channels); err != nil {
+		return err
+	}
+	return l.Publish()
+}
+
 // loadFromChannels populates LED states from 77-value channel array
 func (l *LEDBar) loadFromChannels(channels []int) error {
 	if len(channels) != 77 {
