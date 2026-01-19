@@ -1,6 +1,7 @@
 package streamdeck
 
 import (
+	"fmt"
 	"image"
 	"image/color"
 	"image/draw"
@@ -56,6 +57,8 @@ func (s *StreamDeckUI) renderButton(index int) (image.Image, error) {
 	switch s.currentTab {
 	case TabLightControl:
 		return s.renderModeButton(index - 4)
+	case TabScenes:
+		return s.renderSceneButton(index - 4)
 	default:
 		// Future tabs: show blank buttons
 		return s.renderBlankButton(), nil
@@ -90,8 +93,8 @@ func (s *StreamDeckUI) getTabIconFilename(tab Tab) string {
 	switch tab {
 	case TabLightControl:
 		return "tab_lights.png"
-	case TabFuture2:
-		return "tab_2.png"
+	case TabScenes:
+		return "tab_scenes.png"
 	case TabFuture3:
 		return "tab_3.png"
 	case TabFuture4:
@@ -186,14 +189,78 @@ func (s *StreamDeckUI) updateTouchscreen() error {
 	return nil
 }
 
+// renderSceneButton renders a scene slot button
+func (s *StreamDeckUI) renderSceneButton(index int) (image.Image, error) {
+	exists, _ := s.storage.SceneExists(index)
+
+	label := fmt.Sprintf("Scene %d", index+1)
+	if !exists {
+		label = fmt.Sprintf("(%d)", index+1)
+	}
+
+	// Scene buttons are never "active" - they just show the label
+	return s.renderTextButton(label, false), nil
+}
+
 // renderTouchscreen creates the full touchscreen image
 func (s *StreamDeckUI) renderTouchscreen() image.Image {
 	switch s.currentTab {
 	case TabLightControl:
 		return s.renderLightControlTouchscreen()
+	case TabScenes:
+		return s.renderScenesTouchscreen()
 	default:
 		return s.renderPlaceholderTouchscreen()
 	}
+}
+
+// renderScenesTouchscreen renders the touchscreen for Tab 2 (Scenes)
+func (s *StreamDeckUI) renderScenesTouchscreen() image.Image {
+	img := image.NewRGBA(image.Rect(0, 0, touchWidth, touchHeight))
+
+	// Background
+	draw.Draw(img, img.Bounds(), &image.Uniform{color.RGBA{20, 20, 20, 255}}, image.Point{}, draw.Src)
+
+	// Render each scene section
+	for i := 0; i < 4; i++ {
+		s.renderSceneSection(img, i)
+	}
+
+	return img
+}
+
+// renderSceneSection renders one section of the scenes touchscreen
+func (s *StreamDeckUI) renderSceneSection(img *image.RGBA, index int) {
+	x := index * sectionWidth
+	bounds := image.Rect(x, 0, x+sectionWidth, touchHeight)
+
+	// Background
+	bgColor := color.RGBA{40, 40, 40, 255}
+	draw.Draw(img, bounds, &image.Uniform{bgColor}, image.Point{x, 0}, draw.Src)
+
+	// Border
+	drawVerticalLine(img, x+sectionWidth-1, 0, touchHeight, color.RGBA{80, 80, 80, 255})
+
+	// Label
+	label := fmt.Sprintf("Scene %d", index+1)
+	drawTextAt(img, label, x+sectionWidth/2, 25, color.RGBA{200, 200, 200, 255}, true)
+
+	// Status
+	exists, _ := s.storage.SceneExists(index)
+	status := "Empty"
+	statusColor := color.RGBA{100, 100, 100, 255}
+	if exists {
+		status = "Saved"
+		statusColor = color.RGBA{100, 200, 100, 255}
+	}
+	drawTextAt(img, status, x+sectionWidth/2, 55, statusColor, true)
+
+	// Instructions
+	instruction := "Click dial"
+	if exists {
+		instruction = "Press btn"
+	}
+	drawTextAt(img, instruction, x+sectionWidth/2, 80, color.RGBA{80, 80, 80, 255}, true)
 }
 
 // renderLightControlTouchscreen renders the touchscreen for Tab 1 (Light Control)

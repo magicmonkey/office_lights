@@ -7,6 +7,7 @@ import (
 	"github.com/kevin/office_lights/drivers/ledbar"
 	"github.com/kevin/office_lights/drivers/ledstrip"
 	"github.com/kevin/office_lights/drivers/videolight"
+	"github.com/kevin/office_lights/storage"
 	sdlib "rafaelmartins.com/p/streamdeck"
 )
 
@@ -15,7 +16,7 @@ type Tab int
 
 const (
 	TabLightControl Tab = iota // Tab 1: Light control (existing functionality)
-	TabFuture2                 // Tab 2: Reserved for future use
+	TabScenes                  // Tab 2: Save and recall lighting scenes
 	TabFuture3                 // Tab 3: Reserved for future use
 	TabFuture4                 // Tab 4: Reserved for future use
 )
@@ -25,8 +26,8 @@ func (t Tab) String() string {
 	switch t {
 	case TabLightControl:
 		return "Lights"
-	case TabFuture2:
-		return "Tab 2"
+	case TabScenes:
+		return "Scenes"
 	case TabFuture3:
 		return "Tab 3"
 	case TabFuture4:
@@ -77,6 +78,7 @@ type StreamDeckUI struct {
 	ledBar      *ledbar.LEDBar
 	videoLight1 *videolight.VideoLight
 	videoLight2 *videolight.VideoLight
+	storage     storage.SceneStore
 
 	mu          sync.Mutex
 	currentTab  Tab  // Currently selected tab (0-3)
@@ -97,6 +99,7 @@ func NewStreamDeckUI(
 	ledBar *ledbar.LEDBar,
 	videoLight1 *videolight.VideoLight,
 	videoLight2 *videolight.VideoLight,
+	store storage.SceneStore,
 ) (*StreamDeckUI, error) {
 	// Find Stream Deck devices
 	devices, err := sdlib.Enumerate()
@@ -122,6 +125,7 @@ func NewStreamDeckUI(
 		ledBar:      ledBar,
 		videoLight1: videoLight1,
 		videoLight2: videoLight2,
+		storage:     store,
 		currentTab:  TabLightControl, // Default to Light Control tab
 		currentMode: ModeLEDStrip,    // Default mode within Light Control
 		quit:        make(chan struct{}),

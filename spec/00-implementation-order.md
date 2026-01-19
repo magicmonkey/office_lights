@@ -119,8 +119,22 @@ See **spec/11-state-storage-implementation-order.md** for detailed implementatio
     - Add tab checks to dial handlers
     - Create placeholder content for future tabs
 
+18. **Stream Deck Scenes Architecture** (spec/21-streamdeck-scenes-architecture.md)
+    - Design Tab 2 for saving/recalling lighting scenes
+    - Define database schema for scene storage
+    - Plan 4 scene slots with save (dial click) and recall (button press)
+    - Design touchscreen display showing scene status
+
+19. **Stream Deck Scenes Implementation** (spec/22-streamdeck-scenes-implementation-plan.md)
+    - Add scene tables to database schema
+    - Implement scene storage operations (save/load/delete)
+    - Add storage access to StreamDeckUI
+    - Implement saveScene and recallScene methods
+    - Update event handlers for Tab 2
+    - Render scene buttons and touchscreen status
+
 ## Phase 9: Future Enhancements
-18. **Additional UI Integration** (spec/08-future-ui-integration.md)
+20. **Additional UI Integration** (spec/08-future-ui-integration.md)
     - Add presets and scenes
     - WebSocket support for real-time updates
     - Animations and effects

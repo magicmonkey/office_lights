@@ -44,6 +44,9 @@ func (s *StreamDeckUI) handleButtonPress(buttonIndex int) {
 				log.Printf("Error updating touchscreen: %v", err)
 			}
 		}
+	case TabScenes:
+		// Recall scene from slot
+		s.recallScene(buttonIndex - 4)
 	default:
 		// Future tabs: no action yet
 		log.Printf("Button %d pressed on unimplemented tab %s", buttonIndex, s.currentTab)
@@ -95,31 +98,33 @@ func (s *StreamDeckUI) handleDialPress(dialIndex int) {
 		return
 	}
 
-	// Only handle dial presses on Tab 1 (Light Control)
-	if s.currentTab != TabLightControl {
-		log.Printf("Dial %d pressed on unimplemented tab %s", dialIndex, s.currentTab)
-		return
-	}
-
 	log.Printf("Dial %d pressed", dialIndex)
 
-	// Get section data to determine if this dial is active
-	sections := s.getSectionData()
-	if !sections[dialIndex].Active {
-		log.Printf("Dial %d is inactive in current mode", dialIndex)
-		return
-	}
+	switch s.currentTab {
+	case TabLightControl:
+		// Get section data to determine if this dial is active
+		sections := s.getSectionData()
+		if !sections[dialIndex].Active {
+			log.Printf("Dial %d is inactive in current mode", dialIndex)
+			return
+		}
 
-	// Toggle based on current mode and dial index
-	switch s.currentMode {
-	case ModeLEDStrip:
-		s.toggleLEDStrip(dialIndex)
-	case ModeLEDBarRGBW:
-		s.toggleLEDBarRGBW(dialIndex)
-	case ModeLEDBarWhite:
-		s.toggleLEDBarWhite(dialIndex)
-	case ModeVideoLights:
-		s.toggleVideoLights(dialIndex)
+		// Toggle based on current mode and dial index
+		switch s.currentMode {
+		case ModeLEDStrip:
+			s.toggleLEDStrip(dialIndex)
+		case ModeLEDBarRGBW:
+			s.toggleLEDBarRGBW(dialIndex)
+		case ModeLEDBarWhite:
+			s.toggleLEDBarWhite(dialIndex)
+		case ModeVideoLights:
+			s.toggleVideoLights(dialIndex)
+		}
+	case TabScenes:
+		// Save current state to scene slot
+		s.saveScene(dialIndex)
+	default:
+		log.Printf("Dial %d pressed on unimplemented tab %s", dialIndex, s.currentTab)
 	}
 }
 

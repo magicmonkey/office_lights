@@ -42,6 +42,10 @@ ledbars : id
 ledbars_leds : id, ledbar_id, channel_num, value
 ledstrips : id, red, green, blue
 videolights : id, on, brightness
+scenes : id
+scenes_ledbars_leds : id, scene_id, ledbar_id, channel_num, value
+scenes_ledstrips : id, scene_id, red, green, blue
+scenes_videolights : id, scene_id, on, brightness
 
 The state should be loaded on startup by querying the sqlite file, and saved back to the file every time a value changes and is published to MQTT.  Since there is only 1 LED bar and 1 LED strip, they are hard-coded as ID 0, and the 2 videolights are hard-coded as IDs 0 and 1.
 
@@ -106,6 +110,14 @@ The UI on the streamdeck should work like this:
 * The 4 dials should allow the values shown on the touchscreen to be increased or decreased as the dial is turned, in increments of 5.  Clicking the dials will either toggle the value between "0" and the last-used value, or in the case of the video lights it will toggle the on/off state.  The other two dials will increase or decrease the 2 video lights in increments of 1.
 
 * Touching the touchscreen should do the same thing as clicking the respective dial.
+
+-- Tab 2 --
+
+This is for 4 pre-saved "scenes".  The current state of all of the lights, regardless of what made them get to that state, is able to be saved to and recalled from the 4 buttons on the second row.
+
+* Saving the scene : if the respective dial is clicked, then the current state of the lights gets assigned to that slot.  This is saved in the SQLite database, into the tables prefixed with "scenes".
+
+* Recalling the scene : if the button is pressed, then the state that's assigned to that slot is applied to the various lights.
 
 -- End of tab description --
 

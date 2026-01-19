@@ -5,27 +5,27 @@ import "sync"
 // MockStore is a mock implementation of StateStore for testing
 type MockStore struct {
 	mu              sync.Mutex
-	ledStripCalls   []LEDStripState
-	ledBarCalls     []LEDBarState
-	videoLightCalls []VideoLightState
+	ledStripCalls   []MockLEDStripCall
+	ledBarCalls     []MockLEDBarCall
+	videoLightCalls []MockVideoLightCall
 }
 
-// LEDStripState represents a saved LED strip state
-type LEDStripState struct {
+// MockLEDStripCall represents a recorded LED strip save call
+type MockLEDStripCall struct {
 	ID int
 	R  int
 	G  int
 	B  int
 }
 
-// LEDBarState represents a saved LED bar state
-type LEDBarState struct {
+// MockLEDBarCall represents a recorded LED bar save call
+type MockLEDBarCall struct {
 	ID       int
 	Channels []int
 }
 
-// VideoLightState represents a saved video light state
-type VideoLightState struct {
+// MockVideoLightCall represents a recorded video light save call
+type MockVideoLightCall struct {
 	ID         int
 	On         bool
 	Brightness int
@@ -34,9 +34,9 @@ type VideoLightState struct {
 // NewMockStore creates a new mock store for testing
 func NewMockStore() *MockStore {
 	return &MockStore{
-		ledStripCalls:   make([]LEDStripState, 0),
-		ledBarCalls:     make([]LEDBarState, 0),
-		videoLightCalls: make([]VideoLightState, 0),
+		ledStripCalls:   make([]MockLEDStripCall, 0),
+		ledBarCalls:     make([]MockLEDBarCall, 0),
+		videoLightCalls: make([]MockVideoLightCall, 0),
 	}
 }
 
@@ -45,7 +45,7 @@ func (m *MockStore) SaveLEDStripState(id int, r, g, b int) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
-	m.ledStripCalls = append(m.ledStripCalls, LEDStripState{
+	m.ledStripCalls = append(m.ledStripCalls, MockLEDStripCall{
 		ID: id,
 		R:  r,
 		G:  g,
@@ -69,7 +69,7 @@ func (m *MockStore) SaveLEDBarChannels(ledbarID int, channels []int) error {
 	channelsCopy := make([]int, len(channels))
 	copy(channelsCopy, channels)
 
-	m.ledBarCalls = append(m.ledBarCalls, LEDBarState{
+	m.ledBarCalls = append(m.ledBarCalls, MockLEDBarCall{
 		ID:       ledbarID,
 		Channels: channelsCopy,
 	})
@@ -87,7 +87,7 @@ func (m *MockStore) SaveVideoLightState(id int, on bool, brightness int) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
-	m.videoLightCalls = append(m.videoLightCalls, VideoLightState{
+	m.videoLightCalls = append(m.videoLightCalls, MockVideoLightCall{
 		ID:         id,
 		On:         on,
 		Brightness: brightness,
@@ -102,31 +102,31 @@ func (m *MockStore) LoadVideoLightState(id int) (on bool, brightness int, err er
 }
 
 // GetLEDStripCalls returns all recorded LED strip save calls
-func (m *MockStore) GetLEDStripCalls() []LEDStripState {
+func (m *MockStore) GetLEDStripCalls() []MockLEDStripCall {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
-	result := make([]LEDStripState, len(m.ledStripCalls))
+	result := make([]MockLEDStripCall, len(m.ledStripCalls))
 	copy(result, m.ledStripCalls)
 	return result
 }
 
 // GetLEDBarCalls returns all recorded LED bar save calls
-func (m *MockStore) GetLEDBarCalls() []LEDBarState {
+func (m *MockStore) GetLEDBarCalls() []MockLEDBarCall {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
-	result := make([]LEDBarState, len(m.ledBarCalls))
+	result := make([]MockLEDBarCall, len(m.ledBarCalls))
 	copy(result, m.ledBarCalls)
 	return result
 }
 
 // GetVideoLightCalls returns all recorded video light save calls
-func (m *MockStore) GetVideoLightCalls() []VideoLightState {
+func (m *MockStore) GetVideoLightCalls() []MockVideoLightCall {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
-	result := make([]VideoLightState, len(m.videoLightCalls))
+	result := make([]MockVideoLightCall, len(m.videoLightCalls))
 	copy(result, m.videoLightCalls)
 	return result
 }
@@ -136,7 +136,7 @@ func (m *MockStore) Clear() {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
-	m.ledStripCalls = make([]LEDStripState, 0)
-	m.ledBarCalls = make([]LEDBarState, 0)
-	m.videoLightCalls = make([]VideoLightState, 0)
+	m.ledStripCalls = make([]MockLEDStripCall, 0)
+	m.ledBarCalls = make([]MockLEDBarCall, 0)
+	m.videoLightCalls = make([]MockVideoLightCall, 0)
 }

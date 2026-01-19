@@ -27,7 +27,7 @@ Second Row (Tab-Specific Controls):
 | Tab | Button | Name | Status | Description |
 |-----|--------|------|--------|-------------|
 | 1 | 0 | Light Control | Implemented | Individual light control with mode selection |
-| 2 | 1 | (Undefined) | Future | Reserved for future functionality |
+| 2 | 1 | Scenes | Defined | Save and recall 4 lighting presets (see spec 21-22) |
 | 3 | 2 | (Undefined) | Future | Reserved for future functionality |
 | 4 | 3 | (Undefined) | Future | Reserved for future functionality |
 

@@ -235,7 +235,7 @@ func main() {
 	// Start Stream Deck interface in a goroutine if requested
 	if useStreamDeck {
 		// Create Stream Deck UI
-		streamDeckUI, err := streamdeck.NewStreamDeckUI(ledStrip, ledBar, videoLight1, videoLight2)
+		streamDeckUI, err := streamdeck.NewStreamDeckUI(ledStrip, ledBar, videoLight1, videoLight2, db)
 		if err != nil {
 			log.Printf("Warning: Failed to initialize Stream Deck: %v", err)
 			log.Println("Continuing without Stream Deck interface...")

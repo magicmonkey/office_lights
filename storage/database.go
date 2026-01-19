@@ -60,7 +60,23 @@ func (d *Database) InitSchema() error {
 		}
 	}
 
+	// Ensure scene slots exist (needed for foreign key constraints)
+	if err := d.ensureSceneSlots(); err != nil {
+		return fmt.Errorf("failed to ensure scene slots: %w", err)
+	}
+
 	log.Println("Storage: Schema initialized successfully")
+	return nil
+}
+
+// ensureSceneSlots ensures the 4 scene slots exist in the scenes table
+func (d *Database) ensureSceneSlots() error {
+	for i := 0; i < 4; i++ {
+		_, err := d.db.Exec("INSERT OR IGNORE INTO scenes (id) VALUES (?)", i)
+		if err != nil {
+			return fmt.Errorf("failed to create scene slot %d: %w", i, err)
+		}
+	}
 	return nil
 }
 
@@ -239,4 +255,177 @@ func (d *Database) LoadLEDBarChannels(ledbarID int) ([]int, error) {
 	}
 
 	return channels, nil
+}
+
+// SceneExists checks if a scene slot has saved data
+func (d *Database) SceneExists(sceneID int) (bool, error) {
+	var count int
+	err := d.db.QueryRow(
+		"SELECT COUNT(*) FROM scenes_ledstrips WHERE scene_id = ?",
+		sceneID,
+	).Scan(&count)
+	if err != nil {
+		return false, fmt.Errorf("failed to check scene existence: %w", err)
+	}
+	return count > 0, nil
+}
+
+// SaveScene saves the current light state to a scene slot
+func (d *Database) SaveScene(sceneID int, data *SceneData) error {
+	tx, err := d.db.Begin()
+	if err != nil {
+		return fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer tx.Rollback()
+
+	// Delete existing scene data
+	if _, err := tx.Exec("DELETE FROM scenes_ledbars_leds WHERE scene_id = ?", sceneID); err != nil {
+		return fmt.Errorf("failed to delete old LED bar data: %w", err)
+	}
+	if _, err := tx.Exec("DELETE FROM scenes_ledstrips WHERE scene_id = ?", sceneID); err != nil {
+		return fmt.Errorf("failed to delete old LED strip data: %w", err)
+	}
+	if _, err := tx.Exec("DELETE FROM scenes_videolights WHERE scene_id = ?", sceneID); err != nil {
+		return fmt.Errorf("failed to delete old video light data: %w", err)
+	}
+
+	// Insert LED strip state
+	_, err = tx.Exec(
+		"INSERT INTO scenes_ledstrips (scene_id, red, green, blue) VALUES (?, ?, ?, ?)",
+		sceneID, data.LEDStrip.Red, data.LEDStrip.Green, data.LEDStrip.Blue,
+	)
+	if err != nil {
+		return fmt.Errorf("failed to save LED strip state: %w", err)
+	}
+
+	// Insert LED bar LEDs
+	stmt, err := tx.Prepare("INSERT INTO scenes_ledbars_leds (scene_id, ledbar_id, channel_num, value) VALUES (?, ?, ?, ?)")
+	if err != nil {
+		return fmt.Errorf("failed to prepare LED bar statement: %w", err)
+	}
+	defer stmt.Close()
+
+	for _, led := range data.LEDBarLEDs {
+		if _, err := stmt.Exec(sceneID, led.LEDBarID, led.ChannelNum, led.Value); err != nil {
+			return fmt.Errorf("failed to save LED bar channel %d: %w", led.ChannelNum, err)
+		}
+	}
+
+	// Insert video light states
+	for _, vl := range data.VideoLights {
+		onInt := 0
+		if vl.On {
+			onInt = 1
+		}
+		_, err = tx.Exec(
+			"INSERT INTO scenes_videolights (scene_id, videolight_id, on_state, brightness) VALUES (?, ?, ?, ?)",
+			sceneID, vl.ID, onInt, vl.Brightness,
+		)
+		if err != nil {
+			return fmt.Errorf("failed to save video light %d state: %w", vl.ID, err)
+		}
+	}
+
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	log.Printf("Storage: Scene %d saved successfully", sceneID)
+	return nil
+}
+
+// LoadScene loads scene data from a slot (returns nil if empty)
+func (d *Database) LoadScene(sceneID int) (*SceneData, error) {
+	// Check if scene exists
+	exists, err := d.SceneExists(sceneID)
+	if err != nil {
+		return nil, err
+	}
+	if !exists {
+		return nil, nil // Empty scene
+	}
+
+	data := &SceneData{}
+
+	// Load LED strip
+	err = d.db.QueryRow(
+		"SELECT red, green, blue FROM scenes_ledstrips WHERE scene_id = ?",
+		sceneID,
+	).Scan(&data.LEDStrip.Red, &data.LEDStrip.Green, &data.LEDStrip.Blue)
+	if err != nil && err != sql.ErrNoRows {
+		return nil, fmt.Errorf("failed to load LED strip state: %w", err)
+	}
+
+	// Load LED bar LEDs
+	rows, err := d.db.Query(
+		"SELECT ledbar_id, channel_num, value FROM scenes_ledbars_leds WHERE scene_id = ? ORDER BY ledbar_id, channel_num",
+		sceneID,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query LED bar channels: %w", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var led LEDBarLEDState
+		if err := rows.Scan(&led.LEDBarID, &led.ChannelNum, &led.Value); err != nil {
+			return nil, fmt.Errorf("failed to scan LED bar channel: %w", err)
+		}
+		data.LEDBarLEDs = append(data.LEDBarLEDs, led)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating LED bar channels: %w", err)
+	}
+
+	// Load video lights
+	rows, err = d.db.Query(
+		"SELECT videolight_id, on_state, brightness FROM scenes_videolights WHERE scene_id = ? ORDER BY videolight_id",
+		sceneID,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query video lights: %w", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var vl VideoLightState
+		var onInt int
+		if err := rows.Scan(&vl.ID, &onInt, &vl.Brightness); err != nil {
+			return nil, fmt.Errorf("failed to scan video light: %w", err)
+		}
+		vl.On = onInt != 0
+		data.VideoLights = append(data.VideoLights, vl)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating video lights: %w", err)
+	}
+
+	log.Printf("Storage: Scene %d loaded successfully", sceneID)
+	return data, nil
+}
+
+// DeleteScene clears a scene slot
+func (d *Database) DeleteScene(sceneID int) error {
+	tx, err := d.db.Begin()
+	if err != nil {
+		return fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer tx.Rollback()
+
+	if _, err := tx.Exec("DELETE FROM scenes_ledbars_leds WHERE scene_id = ?", sceneID); err != nil {
+		return fmt.Errorf("failed to delete LED bar data: %w", err)
+	}
+	if _, err := tx.Exec("DELETE FROM scenes_ledstrips WHERE scene_id = ?", sceneID); err != nil {
+		return fmt.Errorf("failed to delete LED strip data: %w", err)
+	}
+	if _, err := tx.Exec("DELETE FROM scenes_videolights WHERE scene_id = ?", sceneID); err != nil {
+		return fmt.Errorf("failed to delete video light data: %w", err)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	log.Printf("Storage: Scene %d deleted", sceneID)
+	return nil
 }
