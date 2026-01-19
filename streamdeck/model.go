@@ -10,7 +10,33 @@ import (
 	sdlib "rafaelmartins.com/p/streamdeck"
 )
 
-// Mode represents the current operational mode of the Stream Deck interface
+// Tab represents the currently selected tab on the Stream Deck
+type Tab int
+
+const (
+	TabLightControl Tab = iota // Tab 1: Light control (existing functionality)
+	TabFuture2                 // Tab 2: Reserved for future use
+	TabFuture3                 // Tab 3: Reserved for future use
+	TabFuture4                 // Tab 4: Reserved for future use
+)
+
+// String returns the string representation of a Tab
+func (t Tab) String() string {
+	switch t {
+	case TabLightControl:
+		return "Lights"
+	case TabFuture2:
+		return "Tab 2"
+	case TabFuture3:
+		return "Tab 3"
+	case TabFuture4:
+		return "Tab 4"
+	default:
+		return "Unknown"
+	}
+}
+
+// Mode represents the current operational mode within Tab 1 (Light Control)
 type Mode int
 
 const (
@@ -53,7 +79,8 @@ type StreamDeckUI struct {
 	videoLight2 *videolight.VideoLight
 
 	mu          sync.Mutex
-	currentMode Mode
+	currentTab  Tab  // Currently selected tab (0-3)
+	currentMode Mode // Mode within TabLightControl
 	lastValues  [4]int // Store last non-zero values for toggle functionality
 
 	// Cached images
@@ -95,7 +122,8 @@ func NewStreamDeckUI(
 		ledBar:      ledBar,
 		videoLight1: videoLight1,
 		videoLight2: videoLight2,
-		currentMode: ModeLEDStrip, // Default mode
+		currentTab:  TabLightControl, // Default to Light Control tab
+		currentMode: ModeLEDStrip,    // Default mode within Light Control
 		quit:        make(chan struct{}),
 	}
 

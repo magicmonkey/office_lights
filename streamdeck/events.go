@@ -10,24 +10,43 @@ const (
 func (s *StreamDeckUI) handleButtonPress(buttonIndex int) {
 	log.Printf("Button %d pressed", buttonIndex)
 
-	// Buttons 0-3 (top row): Reserved for future functionality
+	// Buttons 0-3 (top row): Tab selection
 	if buttonIndex < 4 {
+		newTab := Tab(buttonIndex)
+		if newTab != s.currentTab {
+			log.Printf("Switching tab from %s to %s", s.currentTab, newTab)
+			s.currentTab = newTab
+			// Update all displays
+			if err := s.updateButtons(); err != nil {
+				log.Printf("Error updating buttons: %v", err)
+			}
+			if err := s.updateTouchscreen(); err != nil {
+				log.Printf("Error updating touchscreen: %v", err)
+			}
+		}
 		return
 	}
 
-	// Buttons 4-7 (second row): Mode selection
-	newMode := Mode(buttonIndex - 4)
-	if newMode != s.currentMode {
-		log.Printf("Switching mode from %s to %s", s.currentMode, newMode)
-		s.currentMode = newMode
-		// Update button display to reflect new mode
-		if err := s.updateButtons(); err != nil {
-			log.Printf("Error updating buttons: %v", err)
+	// Buttons 4-7 (second row): Tab-specific actions
+	switch s.currentTab {
+	case TabLightControl:
+		// Mode selection (existing behavior)
+		newMode := Mode(buttonIndex - 4)
+		if newMode != s.currentMode {
+			log.Printf("Switching mode from %s to %s", s.currentMode, newMode)
+			s.currentMode = newMode
+			// Update button display to reflect new mode
+			if err := s.updateButtons(); err != nil {
+				log.Printf("Error updating buttons: %v", err)
+			}
+			// Update touchscreen immediately to show new mode data
+			if err := s.updateTouchscreen(); err != nil {
+				log.Printf("Error updating touchscreen: %v", err)
+			}
 		}
-		// Update touchscreen immediately to show new mode data
-		if err := s.updateTouchscreen(); err != nil {
-			log.Printf("Error updating touchscreen: %v", err)
-		}
+	default:
+		// Future tabs: no action yet
+		log.Printf("Button %d pressed on unimplemented tab %s", buttonIndex, s.currentTab)
 	}
 }
 
@@ -35,6 +54,12 @@ func (s *StreamDeckUI) handleButtonPress(buttonIndex int) {
 func (s *StreamDeckUI) handleDialRotate(dialIndex int, ticks int) {
 	if dialIndex < 0 || dialIndex > 3 {
 		log.Printf("Invalid dial index: %d", dialIndex)
+		return
+	}
+
+	// Only handle dials on Tab 1 (Light Control)
+	if s.currentTab != TabLightControl {
+		log.Printf("Dial %d rotated on unimplemented tab %s", dialIndex, s.currentTab)
 		return
 	}
 
@@ -67,6 +92,12 @@ func (s *StreamDeckUI) handleDialRotate(dialIndex int, ticks int) {
 func (s *StreamDeckUI) handleDialPress(dialIndex int) {
 	if dialIndex < 0 || dialIndex > 3 {
 		log.Printf("Invalid dial index: %d", dialIndex)
+		return
+	}
+
+	// Only handle dial presses on Tab 1 (Light Control)
+	if s.currentTab != TabLightControl {
+		log.Printf("Dial %d pressed on unimplemented tab %s", dialIndex, s.currentTab)
 		return
 	}
 

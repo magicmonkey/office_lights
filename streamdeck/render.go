@@ -47,13 +47,58 @@ func (s *StreamDeckUI) updateButtons() error {
 
 // renderButton creates an image for a specific button
 func (s *StreamDeckUI) renderButton(index int) (image.Image, error) {
-	// Top row (0-3): Reserved for future functionality
+	// Top row (0-3): Tab selection buttons
 	if index < 4 {
-		return s.renderBlankButton(), nil
+		return s.renderTabButton(index)
 	}
 
-	// Second row (4-7): Mode selection buttons
-	return s.renderModeButton(index - 4)
+	// Second row (4-7): Tab-specific buttons
+	switch s.currentTab {
+	case TabLightControl:
+		return s.renderModeButton(index - 4)
+	default:
+		// Future tabs: show blank buttons
+		return s.renderBlankButton(), nil
+	}
+}
+
+// renderTabButton renders a tab selection button
+func (s *StreamDeckUI) renderTabButton(index int) (image.Image, error) {
+	tab := Tab(index)
+	isActive := s.currentTab == tab
+
+	// Try to load tab icon from file
+	iconPath := filepath.Join("streamdeck", "icons", s.getTabIconFilename(tab))
+	img, err := loadImage(iconPath)
+	if err != nil {
+		// If icon not found, create a simple text button
+		return s.renderTextButton(tab.String(), isActive), nil
+	}
+
+	// Apply highlight if active
+	if isActive {
+		img = applyHighlight(img)
+	} else {
+		img = applyDim(img)
+	}
+
+	return img, nil
+}
+
+// getTabIconFilename returns the filename for a tab's icon
+func (s *StreamDeckUI) getTabIconFilename(tab Tab) string {
+	switch tab {
+	case TabLightControl:
+		return "tab_lights.png"
+	case TabFuture2:
+		return "tab_2.png"
+	case TabFuture3:
+		return "tab_3.png"
+	case TabFuture4:
+		return "tab_4.png"
+	default:
+		return "unknown.png"
+	}
 }
 
 // renderModeButton renders a mode selection button
@@ -143,6 +188,16 @@ func (s *StreamDeckUI) updateTouchscreen() error {
 
 // renderTouchscreen creates the full touchscreen image
 func (s *StreamDeckUI) renderTouchscreen() image.Image {
+	switch s.currentTab {
+	case TabLightControl:
+		return s.renderLightControlTouchscreen()
+	default:
+		return s.renderPlaceholderTouchscreen()
+	}
+}
+
+// renderLightControlTouchscreen renders the touchscreen for Tab 1 (Light Control)
+func (s *StreamDeckUI) renderLightControlTouchscreen() image.Image {
 	img := image.NewRGBA(image.Rect(0, 0, touchWidth, touchHeight))
 
 	// Background
@@ -155,6 +210,19 @@ func (s *StreamDeckUI) renderTouchscreen() image.Image {
 	for i := 0; i < 4; i++ {
 		s.renderSection(img, i, sections[i])
 	}
+
+	return img
+}
+
+// renderPlaceholderTouchscreen renders a placeholder for unimplemented tabs
+func (s *StreamDeckUI) renderPlaceholderTouchscreen() image.Image {
+	img := image.NewRGBA(image.Rect(0, 0, touchWidth, touchHeight))
+
+	// Dark background
+	draw.Draw(img, img.Bounds(), &image.Uniform{color.RGBA{30, 30, 30, 255}}, image.Point{}, draw.Src)
+
+	// Center text "Coming Soon"
+	drawTextAt(img, "Coming Soon", touchWidth/2, touchHeight/2, color.RGBA{100, 100, 100, 255}, true)
 
 	return img
 }
