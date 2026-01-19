@@ -4,6 +4,8 @@
 
 This specification defines the architecture for a Stream Deck+ interface that provides tactile control of office lights through buttons, rotary encoders, and a touchscreen display.
 
+**Note:** This spec describes the Light Control functionality (Tab 1). For the tabbed navigation system that organizes this and future features, see `19-streamdeck-tabs-architecture.md`.
+
 ## Hardware Components
 
 ### Stream Deck+ Features
@@ -286,9 +288,8 @@ s.videoLight1.TurnOff()
 ## Future Enhancements
 
 1. **Top Row Buttons (0-3):**
-   - Preset scenes
-   - Quick toggles
-   - Brightness presets
+   - Now used for tab selection (see `19-streamdeck-tabs-architecture.md`)
+   - Tabs 2-4 reserved for: preset scenes, timers, settings, etc.
 
 2. **Touchscreen Gestures:**
    - If hardware supports: Swipe to change modes

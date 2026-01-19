@@ -104,8 +104,23 @@ See **spec/11-state-storage-implementation-order.md** for detailed implementatio
     - Integrate with main application
     - Set up Linux udev rules (if applicable)
 
+16. **Stream Deck Tabs Architecture** (spec/19-streamdeck-tabs-architecture.md)
+    - Design tabbed navigation system
+    - Top row buttons select between 4 tabs
+    - Tab 1: Light Control (existing functionality)
+    - Tabs 2-4: Reserved for future features
+    - Define tab-specific button and dial behavior
+
+17. **Stream Deck Tabs Implementation** (spec/20-streamdeck-tabs-implementation-plan.md)
+    - Add Tab type and state tracking
+    - Update button handling for tab selection
+    - Render tab buttons on top row
+    - Make second row and touchscreen tab-aware
+    - Add tab checks to dial handlers
+    - Create placeholder content for future tabs
+
 ## Phase 9: Future Enhancements
-16. **Additional UI Integration** (spec/08-future-ui-integration.md)
+18. **Additional UI Integration** (spec/08-future-ui-integration.md)
     - Add presets and scenes
     - WebSocket support for real-time updates
     - Animations and effects

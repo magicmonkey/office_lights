@@ -85,7 +85,11 @@ One of the user-interfaces is a Streamdeck+, which has:
 
 The UI on the streamdeck should work like this:
 
-* The buttons on the top row should do nothing, they are reserved for future functionality
+* The whole functionality is arranged in a series of 4 "pages" or "tabs", where the top row of buttons selects between which tab is shown
+
+* Only the first tab is currently defined, showing a page which allows individual control of the lights as described below:
+
+-- Tab 1 --
 
 * The buttons on the second row should act like a radio button set, selecting between:
   1. The LED strip
@@ -100,6 +104,8 @@ The UI on the streamdeck should work like this:
   * For the video lights, show 2 things: the brightness of the first video light, and the brightness of the second video light.
 
 * The 4 dials should allow the values shown on the touchscreen to be increased or decreased as the dial is turned, in increments of 5.  Clicking the dials will either toggle the value between "0" and the last-used value, or in the case of the video lights it will toggle the on/off state.  The other two dials will increase or decrease the 2 video lights in increments of 1.
+
+-- End of tab description --
 
 **Run Stream Deck Interface:**
 ```bash
