@@ -26,6 +26,12 @@ type SceneStore interface {
 	// SceneExists checks if a scene slot has saved data
 	SceneExists(sceneID int) (bool, error)
 
+	// GetSceneName returns the name of a scene slot
+	GetSceneName(sceneID int) (string, error)
+
+	// GetSceneBgColor returns the background color of a scene slot (hex string like "#FF5500")
+	GetSceneBgColor(sceneID int) (string, error)
+
 	// SaveScene saves the current light state to a scene slot
 	SaveScene(sceneID int, data *SceneData) error
 

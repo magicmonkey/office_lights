@@ -71,8 +71,12 @@ func (d *Database) InitSchema() error {
 
 // ensureSceneSlots ensures the 4 scene slots exist in the scenes table
 func (d *Database) ensureSceneSlots() error {
+	// Try to add columns if they don't exist (migration for existing DBs)
+	_, _ = d.db.Exec("ALTER TABLE scenes ADD COLUMN name TEXT NOT NULL DEFAULT ''")
+	_, _ = d.db.Exec("ALTER TABLE scenes ADD COLUMN bgcolor TEXT NOT NULL DEFAULT ''")
+
 	for i := 0; i < 4; i++ {
-		_, err := d.db.Exec("INSERT OR IGNORE INTO scenes (id) VALUES (?)", i)
+		_, err := d.db.Exec("INSERT OR IGNORE INTO scenes (id, name) VALUES (?, ?)", i, "")
 		if err != nil {
 			return fmt.Errorf("failed to create scene slot %d: %w", i, err)
 		}
@@ -268,6 +272,32 @@ func (d *Database) SceneExists(sceneID int) (bool, error) {
 		return false, fmt.Errorf("failed to check scene existence: %w", err)
 	}
 	return count > 0, nil
+}
+
+// GetSceneName returns the name of a scene slot
+func (d *Database) GetSceneName(sceneID int) (string, error) {
+	var name string
+	err := d.db.QueryRow("SELECT name FROM scenes WHERE id = ?", sceneID).Scan(&name)
+	if err == sql.ErrNoRows {
+		return "", nil
+	}
+	if err != nil {
+		return "", fmt.Errorf("failed to get scene name: %w", err)
+	}
+	return name, nil
+}
+
+// GetSceneBgColor returns the background color of a scene slot (hex string like "#FF5500")
+func (d *Database) GetSceneBgColor(sceneID int) (string, error) {
+	var bgcolor string
+	err := d.db.QueryRow("SELECT bgcolor FROM scenes WHERE id = ?", sceneID).Scan(&bgcolor)
+	if err == sql.ErrNoRows {
+		return "", nil
+	}
+	if err != nil {
+		return "", fmt.Errorf("failed to get scene bgcolor: %w", err)
+	}
+	return bgcolor, nil
 }
 
 // SaveScene saves the current light state to a scene slot

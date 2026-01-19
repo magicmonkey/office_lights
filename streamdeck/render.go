@@ -148,6 +148,24 @@ func (s *StreamDeckUI) renderTextButton(text string, isActive bool) image.Image 
 	return img
 }
 
+// renderColoredButton creates a button with a custom background color
+func (s *StreamDeckUI) renderColoredButton(text string, bg color.RGBA) image.Image {
+	img := image.NewRGBA(image.Rect(0, 0, buttonWidth, buttonHeight))
+
+	// Custom background color
+	draw.Draw(img, img.Bounds(), &image.Uniform{bg}, image.Point{}, draw.Src)
+
+	// Choose text color based on background brightness for readability
+	brightness := (int(bg.R) + int(bg.G) + int(bg.B)) / 3
+	textCol := color.RGBA{255, 255, 255, 255} // White text for dark backgrounds
+	if brightness > 128 {
+		textCol = color.RGBA{0, 0, 0, 255} // Black text for light backgrounds
+	}
+	drawCenteredText(img, text, textCol)
+
+	return img
+}
+
 // renderBlankButton creates a blank (black) button
 func (s *StreamDeckUI) renderBlankButton() image.Image {
 	img := image.NewRGBA(image.Rect(0, 0, buttonWidth, buttonHeight))
@@ -193,12 +211,30 @@ func (s *StreamDeckUI) updateTouchscreen() error {
 func (s *StreamDeckUI) renderSceneButton(index int) (image.Image, error) {
 	exists, _ := s.storage.SceneExists(index)
 
-	label := fmt.Sprintf("Scene %d", index+1)
+	var label string
 	if !exists {
 		label = fmt.Sprintf("(%d)", index+1)
+		// Empty slot uses default styling
+		return s.renderTextButton(label, false), nil
 	}
 
-	// Scene buttons are never "active" - they just show the label
+	// Try to get the scene name from the database
+	name, _ := s.storage.GetSceneName(index)
+	if name != "" {
+		label = name
+	} else {
+		label = fmt.Sprintf("Scene %d", index+1)
+	}
+
+	// Try to get the background color from the database
+	bgColorHex, _ := s.storage.GetSceneBgColor(index)
+	if bgColorHex != "" {
+		if bgColor := parseHexColor(bgColorHex); bgColor != nil {
+			return s.renderColoredButton(label, *bgColor), nil
+		}
+	}
+
+	// No custom color, use default styling
 	return s.renderTextButton(label, false), nil
 }
 
@@ -241,12 +277,22 @@ func (s *StreamDeckUI) renderSceneSection(img *image.RGBA, index int) {
 	// Border
 	drawVerticalLine(img, x+sectionWidth-1, 0, touchHeight, color.RGBA{80, 80, 80, 255})
 
-	// Label
-	label := fmt.Sprintf("Scene %d", index+1)
+	// Label - use scene name if available
+	exists, _ := s.storage.SceneExists(index)
+	var label string
+	if exists {
+		name, _ := s.storage.GetSceneName(index)
+		if name != "" {
+			label = name
+		} else {
+			label = fmt.Sprintf("Scene %d", index+1)
+		}
+	} else {
+		label = fmt.Sprintf("Scene %d", index+1)
+	}
 	drawTextAt(img, label, x+sectionWidth/2, 25, color.RGBA{200, 200, 200, 255}, true)
 
 	// Status
-	exists, _ := s.storage.SceneExists(index)
 	status := "Empty"
 	statusColor := color.RGBA{100, 100, 100, 255}
 	if exists {
@@ -446,4 +492,56 @@ func min(a, b uint32) uint32 {
 		return a
 	}
 	return b
+}
+
+// parseHexColor parses a hex color string (e.g., "#FF5500" or "FF5500") into an RGBA color
+func parseHexColor(hex string) *color.RGBA {
+	// Remove leading # if present
+	if len(hex) > 0 && hex[0] == '#' {
+		hex = hex[1:]
+	}
+
+	// Must be 6 hex digits
+	if len(hex) != 6 {
+		return nil
+	}
+
+	// Parse each component
+	r, err := parseHexByte(hex[0:2])
+	if err != nil {
+		return nil
+	}
+	g, err := parseHexByte(hex[2:4])
+	if err != nil {
+		return nil
+	}
+	b, err := parseHexByte(hex[4:6])
+	if err != nil {
+		return nil
+	}
+
+	return &color.RGBA{R: r, G: g, B: b, A: 255}
+}
+
+// parseHexByte parses a 2-character hex string into a byte
+func parseHexByte(s string) (uint8, error) {
+	if len(s) != 2 {
+		return 0, fmt.Errorf("invalid hex byte: %s", s)
+	}
+
+	var result uint8
+	for _, c := range s {
+		result *= 16
+		switch {
+		case c >= '0' && c <= '9':
+			result += uint8(c - '0')
+		case c >= 'a' && c <= 'f':
+			result += uint8(c - 'a' + 10)
+		case c >= 'A' && c <= 'F':
+			result += uint8(c - 'A' + 10)
+		default:
+			return 0, fmt.Errorf("invalid hex character: %c", c)
+		}
+	}
+	return result, nil
 }

@@ -42,7 +42,7 @@ ledbars : id
 ledbars_leds : id, ledbar_id, channel_num, value
 ledstrips : id, red, green, blue
 videolights : id, on, brightness
-scenes : id
+scenes : id, name, bgcolor
 scenes_ledbars_leds : id, scene_id, ledbar_id, channel_num, value
 scenes_ledstrips : id, scene_id, red, green, blue
 scenes_videolights : id, scene_id, on, brightness
@@ -118,6 +118,10 @@ This is for 4 pre-saved "scenes".  The current state of all of the lights, regar
 * Saving the scene : if the respective dial is clicked, then the current state of the lights gets assigned to that slot.  This is saved in the SQLite database, into the tables prefixed with "scenes".
 
 * Recalling the scene : if the button is pressed, then the state that's assigned to that slot is applied to the various lights.
+
+* The name of the scene is read from the database; there is no requirement for an interface to update the name.
+
+* The background color of the button is read from the database; there is no requirement for an interface to update the name.
 
 -- End of tab description --
 

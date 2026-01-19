@@ -39,7 +39,9 @@ ON ledbars_leds(ledbar_id, channel_num);`
 	// Scene tables for saving/recalling light presets
 	schemaScenes = `
 CREATE TABLE IF NOT EXISTS scenes (
-    id INTEGER PRIMARY KEY
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL DEFAULT '',
+    bgcolor TEXT NOT NULL DEFAULT ''
 );`
 
 	schemaScenesLEDBarsLEDs = `
