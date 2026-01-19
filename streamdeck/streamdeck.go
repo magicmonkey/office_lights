@@ -1,6 +1,7 @@
 package streamdeck
 
 import (
+	"image"
 	"log"
 	"time"
 
@@ -111,6 +112,15 @@ func (s *StreamDeckUI) registerHandlers() error {
 			// Dial might not be supported on this device, log but don't fail
 			log.Printf("Warning: Could not register dial switch %d handler: %v", i+1, err)
 		}
+	}
+
+	// Register touch strip handler
+	if err := s.device.AddTouchStripTouchHandler(func(d *sdlib.Device, t sdlib.TouchStripTouchType, p image.Point) error {
+		s.handleTouch(p.X, p.Y)
+		return nil
+	}); err != nil {
+		// Touch strip might not be supported on this device, log but don't fail
+		log.Printf("Warning: Could not register touch strip handler: %v", err)
 	}
 
 	return nil

@@ -105,6 +105,8 @@ The UI on the streamdeck should work like this:
 
 * The 4 dials should allow the values shown on the touchscreen to be increased or decreased as the dial is turned, in increments of 5.  Clicking the dials will either toggle the value between "0" and the last-used value, or in the case of the video lights it will toggle the on/off state.  The other two dials will increase or decrease the 2 video lights in increments of 1.
 
+* Touching the touchscreen should do the same thing as clicking the respective dial.
+
 -- End of tab description --
 
 **Run Stream Deck Interface:**

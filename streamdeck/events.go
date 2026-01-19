@@ -129,8 +129,36 @@ func (s *StreamDeckUI) handleTouch(x, y int) {
 	section := x / sectionWidth
 	log.Printf("Touchscreen touched at (%d, %d) -> section %d", x, y, section)
 
-	// Optional: provide visual feedback or additional functionality
-	// For now, we just log the event
+	// Validate section index
+	if section < 0 || section > 3 {
+		log.Printf("Invalid section index: %d", section)
+		return
+	}
+
+	// Only handle touches on Tab 1 (Light Control)
+	if s.currentTab != TabLightControl {
+		log.Printf("Touchscreen touched on unimplemented tab %s", s.currentTab)
+		return
+	}
+
+	// Get section data to determine if this section is active
+	sections := s.getSectionData()
+	if !sections[section].Active {
+		log.Printf("Section %d is inactive in current mode", section)
+		return
+	}
+
+	// Toggle based on current mode and section (same as dial click)
+	switch s.currentMode {
+	case ModeLEDStrip:
+		s.toggleLEDStrip(section)
+	case ModeLEDBarRGBW:
+		s.toggleLEDBarRGBW(section)
+	case ModeLEDBarWhite:
+		s.toggleLEDBarWhite(section)
+	case ModeVideoLights:
+		s.toggleVideoLights(section)
+	}
 }
 
 // LED Strip adjustment functions
