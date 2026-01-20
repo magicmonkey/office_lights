@@ -12,7 +12,7 @@ where "r", "g", and "b" contain integer values for red, green, and blue respecti
 2. LED bar.  This is a bar of RGBW LEDs, with some additional white-only LEDs.  There are 2 of these bars, and each one reads from a comma-separated list of values sent to the MQTT topic "kevinoffice/ledbar/0".  The values in the list are:
    * 6 sets of 4 values, for 6 RGBW LEDs
    * 13 sets of 1 value, for 13 white LEDs
-   * 3 ignored values
+   * 2 ignored values
    * 6 sets of 4 values, for 6 RGBW LEDs
    * 13 sets of 1 value, for 13 white LEDs
 
