@@ -75,7 +75,7 @@ func (d *Database) ensureSceneSlots() error {
 	_, _ = d.db.Exec("ALTER TABLE scenes ADD COLUMN name TEXT NOT NULL DEFAULT ''")
 	_, _ = d.db.Exec("ALTER TABLE scenes ADD COLUMN bgcolor TEXT NOT NULL DEFAULT ''")
 
-	for i := 0; i < 8; i++ {
+	for i := range 8 {
 		_, err := d.db.Exec("INSERT OR IGNORE INTO scenes (id, name) VALUES (?, ?)", i, "")
 		if err != nil {
 			return fmt.Errorf("failed to create scene slot %d: %w", i, err)
