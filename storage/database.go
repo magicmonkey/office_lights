@@ -69,13 +69,13 @@ func (d *Database) InitSchema() error {
 	return nil
 }
 
-// ensureSceneSlots ensures the 4 scene slots exist in the scenes table
+// ensureSceneSlots ensures the 8 scene slots exist in the scenes table
 func (d *Database) ensureSceneSlots() error {
 	// Try to add columns if they don't exist (migration for existing DBs)
 	_, _ = d.db.Exec("ALTER TABLE scenes ADD COLUMN name TEXT NOT NULL DEFAULT ''")
 	_, _ = d.db.Exec("ALTER TABLE scenes ADD COLUMN bgcolor TEXT NOT NULL DEFAULT ''")
 
-	for i := 0; i < 4; i++ {
+	for i := 0; i < 8; i++ {
 		_, err := d.db.Exec("INSERT OR IGNORE INTO scenes (id, name) VALUES (?, ?)", i, "")
 		if err != nil {
 			return fmt.Errorf("failed to create scene slot %d: %w", i, err)

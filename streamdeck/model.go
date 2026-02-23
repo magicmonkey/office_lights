@@ -16,8 +16,8 @@ type Tab int
 
 const (
 	TabLightControl Tab = iota // Tab 1: Light control (existing functionality)
-	TabScenes                  // Tab 2: Save and recall lighting scenes
-	TabFuture3                 // Tab 3: Reserved for future use
+	TabScenes                  // Tab 2: Save and recall lighting scenes (slots 0-3)
+	TabScenes2                 // Tab 3: Additional scenes (slots 4-7)
 	TabFuture4                 // Tab 4: Reserved for future use
 )
 
@@ -28,8 +28,8 @@ func (t Tab) String() string {
 		return "Lights"
 	case TabScenes:
 		return "Scenes"
-	case TabFuture3:
-		return "Tab 3"
+	case TabScenes2:
+		return "Scenes 2"
 	case TabFuture4:
 		return "Tab 4"
 	default:

@@ -123,6 +123,10 @@ This is for 4 pre-saved "scenes".  The current state of all of the lights, regar
 
 * The background color of the button is read from the database; there is no requirement for an interface to update the name.
 
+-- Tab 3 --
+
+This is the same as tab 2, but with 4 new scenes
+
 -- End of tab description --
 
 **Run Stream Deck Interface:**

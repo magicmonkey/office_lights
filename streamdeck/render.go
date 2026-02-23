@@ -59,6 +59,8 @@ func (s *StreamDeckUI) renderButton(index int) (image.Image, error) {
 		return s.renderModeButton(index - 4)
 	case TabScenes:
 		return s.renderSceneButton(index - 4)
+	case TabScenes2:
+		return s.renderSceneButton(index - 4 + 4) // Scene slots 4-7
 	default:
 		// Future tabs: show blank buttons
 		return s.renderBlankButton(), nil
@@ -95,7 +97,7 @@ func (s *StreamDeckUI) getTabIconFilename(tab Tab) string {
 		return "tab_lights.png"
 	case TabScenes:
 		return "tab_scenes.png"
-	case TabFuture3:
+	case TabScenes2:
 		return "tab_3.png"
 	case TabFuture4:
 		return "tab_4.png"
@@ -244,14 +246,17 @@ func (s *StreamDeckUI) renderTouchscreen() image.Image {
 	case TabLightControl:
 		return s.renderLightControlTouchscreen()
 	case TabScenes:
-		return s.renderScenesTouchscreen()
+		return s.renderScenesTouchscreen(0) // Scenes 0-3
+	case TabScenes2:
+		return s.renderScenesTouchscreen(4) // Scenes 4-7
 	default:
 		return s.renderPlaceholderTouchscreen()
 	}
 }
 
-// renderScenesTouchscreen renders the touchscreen for Tab 2 (Scenes)
-func (s *StreamDeckUI) renderScenesTouchscreen() image.Image {
+// renderScenesTouchscreen renders the touchscreen for scenes tabs
+// sceneOffset is added to the scene index (0 for Tab 2, 4 for Tab 3)
+func (s *StreamDeckUI) renderScenesTouchscreen(sceneOffset int) image.Image {
 	img := image.NewRGBA(image.Rect(0, 0, touchWidth, touchHeight))
 
 	// Background
@@ -259,15 +264,16 @@ func (s *StreamDeckUI) renderScenesTouchscreen() image.Image {
 
 	// Render each scene section
 	for i := 0; i < 4; i++ {
-		s.renderSceneSection(img, i)
+		s.renderSceneSection(img, i, sceneOffset+i)
 	}
 
 	return img
 }
 
 // renderSceneSection renders one section of the scenes touchscreen
-func (s *StreamDeckUI) renderSceneSection(img *image.RGBA, index int) {
-	x := index * sectionWidth
+// sectionIndex is the position on screen (0-3), sceneID is the actual scene slot number
+func (s *StreamDeckUI) renderSceneSection(img *image.RGBA, sectionIndex int, sceneID int) {
+	x := sectionIndex * sectionWidth
 	bounds := image.Rect(x, 0, x+sectionWidth, touchHeight)
 
 	// Background
@@ -278,17 +284,17 @@ func (s *StreamDeckUI) renderSceneSection(img *image.RGBA, index int) {
 	drawVerticalLine(img, x+sectionWidth-1, 0, touchHeight, color.RGBA{80, 80, 80, 255})
 
 	// Label - use scene name if available
-	exists, _ := s.storage.SceneExists(index)
+	exists, _ := s.storage.SceneExists(sceneID)
 	var label string
 	if exists {
-		name, _ := s.storage.GetSceneName(index)
+		name, _ := s.storage.GetSceneName(sceneID)
 		if name != "" {
 			label = name
 		} else {
-			label = fmt.Sprintf("Scene %d", index+1)
+			label = fmt.Sprintf("Scene %d", sceneID+1)
 		}
 	} else {
-		label = fmt.Sprintf("Scene %d", index+1)
+		label = fmt.Sprintf("Scene %d", sceneID+1)
 	}
 	drawTextAt(img, label, x+sectionWidth/2, 25, color.RGBA{200, 200, 200, 255}, true)
 

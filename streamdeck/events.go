@@ -45,8 +45,11 @@ func (s *StreamDeckUI) handleButtonPress(buttonIndex int) {
 			}
 		}
 	case TabScenes:
-		// Recall scene from slot
+		// Recall scene from slot (scenes 0-3)
 		s.recallScene(buttonIndex - 4)
+	case TabScenes2:
+		// Recall scene from slot (scenes 4-7)
+		s.recallScene(buttonIndex - 4 + 4)
 	default:
 		// Future tabs: no action yet
 		log.Printf("Button %d pressed on unimplemented tab %s", buttonIndex, s.currentTab)
@@ -121,8 +124,11 @@ func (s *StreamDeckUI) handleDialPress(dialIndex int) {
 			s.toggleVideoLights(dialIndex)
 		}
 	case TabScenes:
-		// Save current state to scene slot
+		// Save current state to scene slot (scenes 0-3)
 		s.saveScene(dialIndex)
+	case TabScenes2:
+		// Save current state to scene slot (scenes 4-7)
+		s.saveScene(dialIndex + 4)
 	default:
 		log.Printf("Dial %d pressed on unimplemented tab %s", dialIndex, s.currentTab)
 	}
