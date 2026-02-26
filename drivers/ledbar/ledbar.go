@@ -346,14 +346,14 @@ func (l *LEDBar) formatMessage() string {
 	values := make([]string, 0, 77)
 
 	// First section: 6 RGBW LEDs (24 values)
-	for i := 0; i < 6; i++ {
-		for j := 0; j < 4; j++ {
+	for i := range l.rgbw1 {
+		for j := range l.rgbw1[i] {
 			values = append(values, strconv.Itoa(l.rgbw1[i][j]))
 		}
 	}
 
 	// First section: 13 white LEDs (13 values)
-	for i := 0; i < 13; i++ {
+	for i := range l.white1 {
 		values = append(values, strconv.Itoa(l.white1[i]))
 	}
 
@@ -361,14 +361,14 @@ func (l *LEDBar) formatMessage() string {
 	values = append(values, "0", "0")
 
 	// Second section: 6 RGBW LEDs (24 values)
-	for i := 0; i < 6; i++ {
-		for j := 0; j < 4; j++ {
+	for i := range l.rgbw2 {
+		for j := range l.rgbw2[i] {
 			values = append(values, strconv.Itoa(l.rgbw2[i][j]))
 		}
 	}
 
 	// Second section: 13 white LEDs (13 values)
-	for i := 0; i < 13; i++ {
+	for i := range l.white2 {
 		values = append(values, strconv.Itoa(l.white2[i]))
 	}
 
@@ -410,15 +410,15 @@ func (l *LEDBar) loadFromChannels(channels []int) error {
 	idx := 0
 
 	// Load first section RGBW (24 values)
-	for i := 0; i < 6; i++ {
-		for j := 0; j < 4; j++ {
+	for i := range l.rgbw1 {
+		for j := range l.rgbw1[i] {
 			l.rgbw1[i][j] = channels[idx]
 			idx++
 		}
 	}
 
 	// Load first section white (13 values)
-	for i := 0; i < 13; i++ {
+	for i := range l.white1 {
 		l.white1[i] = channels[idx]
 		idx++
 	}
@@ -427,15 +427,15 @@ func (l *LEDBar) loadFromChannels(channels []int) error {
 	idx += 3
 
 	// Load second section RGBW (24 values)
-	for i := 0; i < 6; i++ {
-		for j := 0; j < 4; j++ {
+	for i := range l.rgbw2 {
+		for j := range l.rgbw2[i] {
 			l.rgbw2[i][j] = channels[idx]
 			idx++
 		}
 	}
 
 	// Load second section white (13 values)
-	for i := 0; i < 13; i++ {
+	for i := range l.white2 {
 		l.white2[i] = channels[idx]
 		idx++
 	}
@@ -449,15 +449,15 @@ func (l *LEDBar) getChannels() []int {
 	idx := 0
 
 	// First section RGBW
-	for i := 0; i < 6; i++ {
-		for j := 0; j < 4; j++ {
+	for i := range l.rgbw1 {
+		for j := range l.rgbw1[i] {
 			channels[idx] = l.rgbw1[i][j]
 			idx++
 		}
 	}
 
 	// First section white
-	for i := 0; i < 13; i++ {
+	for i := range l.white1 {
 		channels[idx] = l.white1[i]
 		idx++
 	}
@@ -466,15 +466,15 @@ func (l *LEDBar) getChannels() []int {
 	idx += 3
 
 	// Second section RGBW
-	for i := 0; i < 6; i++ {
-		for j := 0; j < 4; j++ {
+	for i := range l.rgbw2 {
+		for j := range l.rgbw2[i] {
 			channels[idx] = l.rgbw2[i][j]
 			idx++
 		}
 	}
 
 	// Second section white
-	for i := 0; i < 13; i++ {
+	for i := range l.white2 {
 		channels[idx] = l.white2[i]
 		idx++
 	}
