@@ -81,13 +81,13 @@ func (c *Client) Disconnect() {
 }
 
 // Publish publishes a message to the specified topic
-func (c *Client) Publish(topic string, payload interface{}) error {
+func (c *Client) Publish(topic string, payload any) error {
 	if !c.client.IsConnected() {
 		return fmt.Errorf("client not connected")
 	}
 
 	// Convert payload to string if it's not already a byte slice
-	var data interface{}
+	var data any
 	switch v := payload.(type) {
 	case []byte:
 		data = v

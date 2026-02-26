@@ -263,7 +263,7 @@ func (s *StreamDeckUI) renderScenesTouchscreen(sceneOffset int) image.Image {
 	draw.Draw(img, img.Bounds(), &image.Uniform{color.RGBA{20, 20, 20, 255}}, image.Point{}, draw.Src)
 
 	// Render each scene section
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		s.renderSceneSection(img, i, sceneOffset+i)
 	}
 
@@ -326,7 +326,7 @@ func (s *StreamDeckUI) renderLightControlTouchscreen() image.Image {
 	sections := s.getSectionData()
 
 	// Render each section
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		s.renderSection(img, i, sections[i])
 	}
 
@@ -488,16 +488,9 @@ func drawVerticalLine(img *image.RGBA, x, y1, y2 int, col color.Color) {
 
 func formatValue(value int) string {
 	if value < 100 {
-		return string(rune('0' + value/10)) + string(rune('0' + value%10))
+		return string(rune('0'+value/10)) + string(rune('0'+value%10))
 	}
 	return string(rune('0'+value/100)) + string(rune('0'+(value%100)/10)) + string(rune('0'+value%10))
-}
-
-func min(a, b uint32) uint32 {
-	if a < b {
-		return a
-	}
-	return b
 }
 
 // parseHexColor parses a hex color string (e.g., "#FF5500" or "FF5500") into an RGBA color
